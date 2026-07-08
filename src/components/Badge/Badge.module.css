@@ -1,0 +1,75 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Sizes */
+.size-sm {
+  font-size: 0.6875rem; /* 11px */
+  padding: 2px var(--space-2);
+  height: 18px;
+}
+
+.size-md {
+  font-size: var(--font-size-xs);
+  padding: 3px var(--space-2);
+  height: 22px;
+}
+
+/* Variants — soft background + coloured text + subtle border */
+.variant-default {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+  border-color: var(--color-gray-200);
+}
+
+.variant-primary {
+  background-color: var(--color-brand-soft);
+  color: var(--color-brand);
+  border-color: var(--color-brand-border);
+}
+
+.variant-success {
+  background-color: var(--color-success-soft);
+  color: #14532D;
+  border-color: var(--color-success-border);
+}
+
+.variant-warning {
+  background-color: var(--color-warning-soft);
+  color: #78350F;
+  border-color: var(--color-warning-border);
+}
+
+.variant-danger {
+  background-color: var(--color-danger-soft);
+  color: #7F1D1D;
+  border-color: var(--color-danger-border);
+}
+
+.variant-info {
+  background-color: var(--color-info-soft);
+  color: #075985;
+  border-color: var(--color-info-border);
+}
+
+.variant-accent {
+  background-color: var(--color-accent-soft);
+  color: #78571C;
+  border-color: var(--color-accent);
+}
+
+/* Dot indicator */
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: currentColor;
+  flex-shrink: 0;
+}

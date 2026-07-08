@@ -1,0 +1,75 @@
+.subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barTrack {
+  height: 22px;
+  background-color: var(--color-gray-100);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  position: relative;
+}
+
+.bar {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--color-brand) 0%,
+    var(--color-brand-hover) 100%
+  );
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 var(--space-2);
+  min-width: 40px;
+  transition: width var(--transition-slow);
+  animation: grow var(--transition-slow) ease-out;
+}
+
+.barValue {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-inverse);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-mono);
+}
+
+@keyframes grow {
+  from { width: 0; }
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 90px 1fr;
+    gap: var(--space-2);
+  }
+  .label {
+    font-size: var(--font-size-xs);
+  }
+}

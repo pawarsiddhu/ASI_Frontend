@@ -1,0 +1,99 @@
+.stack {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: calc(100vw - 2 * var(--space-4));
+  width: 360px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  border-left-width: 4px;
+  pointer-events: auto;
+  animation: slideIn var(--transition-base);
+}
+
+.leaving {
+  animation: slideOut var(--transition-base) forwards;
+}
+
+.type-success {
+  border-left-color: var(--color-success);
+}
+.type-success .icon { color: var(--color-success); }
+
+.type-warning {
+  border-left-color: var(--color-warning);
+}
+.type-warning .icon { color: var(--color-warning); }
+
+.type-error {
+  border-left-color: var(--color-danger);
+}
+.type-error .icon { color: var(--color-danger); }
+
+.type-info {
+  border-left-color: var(--color-info);
+}
+.type-info .icon { color: var(--color-info); }
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.message {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-snug);
+}
+
+.close {
+  color: var(--color-text-muted);
+  padding: var(--space-1);
+  margin: calc(-1 * var(--space-1));
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+.close:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-gray-100);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(20px); }
+}
+
+@media (max-width: 640px) {
+  .stack {
+    left: var(--space-4);
+    right: var(--space-4);
+    width: auto;
+  }
+}
