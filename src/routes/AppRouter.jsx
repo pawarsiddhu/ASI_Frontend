@@ -14,8 +14,7 @@ import LoginPage from '@features/auth/LoginPage';
 import UnauthorizedPage from '@features/auth/UnauthorizedPage';
 import NotFoundPage from '@features/NotFoundPage';
 
-// Dashboards are lazy-loaded. Each becomes its own bundle chunk.
-// Result: Operator's browser never downloads the Admin dashboard code.
+// Dashboards are lazy-loaded — each is its own bundle chunk.
 const OperatorDashboard = lazy(() =>
   import('@features/dashboard/operator/OperatorDashboard')
 );
@@ -32,19 +31,29 @@ const RDDashboard = lazy(() =>
   import('@features/dashboard/rd/RDDashboard')
 );
 
-// Antiquities feature routes
+// Antiquities feature — all pages lazy for chunk-per-route
 const AntiquitiesListPage = lazy(() =>
   import('@features/antiquities/AntiquitiesListPage')
 );
 const AntiquityCreatePage = lazy(() =>
   import('@features/antiquities/AntiquityCreatePage')
 );
+const AntiquityEditPage = lazy(() =>
+  import('@features/antiquities/AntiquityEditPage')
+);
+const AntiquityDetailPage = lazy(() =>
+  import('@features/antiquities/AntiquityDetailPage')
+);
 
-/**
- * Wrap the lazy dashboards in a shared Suspense fallback.
- * Placed inside the AppShell so the shell stays visible while a chunk loads —
- * only the main content area shows the spinner, header + sidebar don't flash.
- */
+// BHS feature — same lazy pattern
+const BHSListPage = lazy(() => import('@features/bhs/BHSListPage'));
+const BHSCreatePage = lazy(() => import('@features/bhs/BHSCreatePage'));
+const BHSEditPage = lazy(() => import('@features/bhs/BHSEditPage'));
+const BHSDetailPage = lazy(() => import('@features/bhs/BHSDetailPage'));
+
+// Reports feature
+const ReportsPage = lazy(() => import('@features/reports/ReportsPage'));
+
 const LazyBoundary = ({ children }) => (
   <Suspense fallback={<Spinner centered label="Loading page" />}>
     {children}
@@ -56,13 +65,13 @@ export default function AppRouter() {
     <BrowserRouter>
       <Routes>
         {/* --- Public --- */}
+        <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
         {/* --- Authenticated --- */}
         <Route element={<ProtectedRoute />}>
           <Route element={<AppShell />}>
-            <Route index element={<RootRedirect />} />
 
             <Route element={<RoleGuard allowedRoles={[ROLES.OPERATOR]} />}>
               <Route
@@ -99,7 +108,7 @@ export default function AppRouter() {
               />
             </Route>
 
-            {/* Antiquities — universal route, data scoped server-side by role */}
+            {/* Antiquities — universal routes, data scoped server-side by role */}
             <Route
               path="/records/antiquities"
               element={<LazyBoundary><AntiquitiesListPage /></LazyBoundary>}
@@ -108,6 +117,45 @@ export default function AppRouter() {
               path="/records/antiquities/new"
               element={<LazyBoundary><AntiquityCreatePage /></LazyBoundary>}
             />
+            {/* Detail must come after /new so /new doesn't match :id */}
+            <Route
+              path="/records/antiquities/:id"
+              element={<LazyBoundary><AntiquityDetailPage /></LazyBoundary>}
+            />
+            <Route
+              path="/records/antiquities/:id/edit"
+              element={<LazyBoundary><AntiquityEditPage /></LazyBoundary>}
+            />
+
+            {/* BHS — same URL pattern, same guard shape */}
+            <Route
+              path="/records/bhs"
+              element={<LazyBoundary><BHSListPage /></LazyBoundary>}
+            />
+            <Route
+              path="/records/bhs/new"
+              element={<LazyBoundary><BHSCreatePage /></LazyBoundary>}
+            />
+            <Route
+              path="/records/bhs/:id"
+              element={<LazyBoundary><BHSDetailPage /></LazyBoundary>}
+            />
+            <Route
+              path="/records/bhs/:id/edit"
+              element={<LazyBoundary><BHSEditPage /></LazyBoundary>}
+            />
+
+            {/* Reports — Chunk A: Admin + Super Admin only */}
+            <Route
+              element={
+                <RoleGuard allowedRoles={[ROLES.ADMIN, ROLES.SUPERADMIN]} />
+              }
+            >
+              <Route
+                path="/reports/antiquities"
+                element={<LazyBoundary><ReportsPage /></LazyBoundary>}
+              />
+            </Route>
           </Route>
         </Route>
 

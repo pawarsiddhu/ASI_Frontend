@@ -1,131 +1,200 @@
 /* =========================================================================
-   ASI Internal Portal — Design Tokens
-   Change a value here, it propagates everywhere.
+   ASI Internal Portal — Design Tokens (v2, post-demo redesign)
+
+   Palette DNA is heritage / documentation, not fintech:
+     - Deep charcoal-plum sidebar (warmth in the darkness, not blue-black)
+     - ASI maroon primary (kept from login — the identity everyone approved)
+     - Warm gold accent (heritage feel, echoes brass / temple metalwork)
+     - Muted teal for success (verified/anchored — not the harsh green)
+     - Burnt amber for warning (returned/pending — heritage sepia)
+     - Warm off-white page bg (softer than pure white; reads as considered)
+   No pure blues — Sid was explicit. All utility colors picked with warm undertones.
    ========================================================================= */
 
 :root {
-  /* ---------- BRAND ---------- */
-  /* Maroon — from ASI/government identity */
+  /* ---------- BRAND (unchanged from login) ---------- */
   --color-brand: #8B1A1A;
   --color-brand-hover: #701414;
   --color-brand-active: #5A1010;
-  --color-brand-soft: #FBEAEA;      /* light tint for backgrounds */
+  --color-brand-soft: #FBEAEA;
   --color-brand-border: #E8C4C4;
 
-  /* Gold accent — for highlights, decorative elements */
+  /* Gold accent — heritage warmth */
   --color-accent: #C9A961;
   --color-accent-hover: #B8975A;
   --color-accent-soft: #FBF6E8;
+  --color-accent-border: #E8D9A8;
+
+  /* ---------- SIDEBAR (deep charcoal-plum, distinct from any fintech-blue) ----------
+     The sidebar reads as one dark surface with a warm undertone. Not pure
+     black (looks cheap), not slate-blue (too fintech), not maroon-heavy
+     (would compete with brand accents). Warm charcoal with a plum shift. */
+  --color-sidebar-bg: #1A1416;
+  --color-sidebar-bg-alt: #221A1D;
+  --color-sidebar-text: #F3E9E9;
+  --color-sidebar-text-muted: #8F7A7C;
+  --color-sidebar-text-strong: #FFFFFF;
+  --color-sidebar-hover: rgba(255, 255, 255, 0.06);
+  --color-sidebar-active-bg: rgba(139, 26, 26, 0.35);
+  --color-sidebar-active-border: var(--color-accent);
+  --color-sidebar-divider: rgba(255, 255, 255, 0.08);
 
   /* ---------- NEUTRALS ---------- */
-  --color-gray-50: #F8F9FA;
-  --color-gray-100: #F1F3F5;
-  --color-gray-200: #E5E7EB;
-  --color-gray-300: #D1D5DB;
-  --color-gray-400: #9CA3AF;
-  --color-gray-500: #6B7280;
-  --color-gray-600: #4B5563;
-  --color-gray-700: #374151;
-  --color-gray-800: #1F2937;
-  --color-gray-900: #111827;
+  --color-gray-50: #FAFAF8;
+  --color-gray-100: #F4F3F1;
+  --color-gray-200: #E7E5E1;
+  --color-gray-300: #D4D2CD;
+  --color-gray-400: #A8A5A0;
+  --color-gray-500: #78756F;
+  --color-gray-600: #55524D;
+  --color-gray-700: #3D3B37;
+  --color-gray-800: #26241F;
+  --color-gray-900: #1A1815;
 
   /* ---------- SEMANTIC TEXT ---------- */
-  --color-text-primary: #111827;
-  --color-text-secondary: #4B5563;
-  --color-text-muted: #6B7280;
+  --color-text-primary: #1A1815;
+  --color-text-secondary: #55524D;
+  --color-text-muted: #78756F;
   --color-text-inverse: #FFFFFF;
   --color-text-link: var(--color-brand);
   --color-text-link-hover: var(--color-brand-hover);
 
+  /* Compat aliases — some components import older names. */
+  --color-text: var(--color-text-primary);
+  --color-surface: var(--color-bg-surface);
+  --color-surface-alt: var(--color-bg-muted);
+  --color-border: var(--color-border-subtle);
+
   /* ---------- SEMANTIC SURFACES ---------- */
-  --color-bg-page: #F5F6F8;
+  /* Warm off-white page — feels considered, not clinical. */
+  --color-bg-page: #FAFAF8;
   --color-bg-surface: #FFFFFF;
-  --color-bg-muted: #F8F9FA;
-  --color-bg-inverse: #1F2937;
+  --color-bg-muted: #F4F3F1;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-inverse: var(--color-sidebar-bg);
 
   /* ---------- SEMANTIC BORDERS ---------- */
-  --color-border-subtle: #E5E7EB;
-  --color-border-default: #D1D5DB;
-  --color-border-strong: #9CA3AF;
+  --color-border-subtle: #EAE7E1;
+  --color-border-default: #D4D2CD;
+  --color-border-strong: #A8A5A0;
   --color-border-focus: var(--color-brand);
 
-  /* ---------- STATUS COLORS ---------- */
-  --color-success: #16A34A;
-  --color-success-soft: #DCFCE7;
-  --color-success-border: #86EFAC;
+  /* ---------- STATUS COLORS (warm-toned, no cool blues) ---------- */
+  /* Success — muted teal (published/verified). Reads as "trusted heritage
+     verification", not "your Uber is arriving". */
+  --color-success: #0D9488;
+  --color-success-hover: #0B7F73;
+  --color-success-soft: #E6F4F1;
+  --color-success-border: #A7DBD1;
 
-  --color-warning: #D97706;
-  --color-warning-soft: #FEF3C7;
-  --color-warning-border: #FCD34D;
+  /* Warning — burnt amber. Sepia heritage feel for returned/pending. */
+  --color-warning: #B45309;
+  --color-warning-hover: #92400E;
+  --color-warning-soft: #FBEFDD;
+  --color-warning-border: #F0D0A0;
 
-  --color-danger: #DC2626;
-  --color-danger-soft: #FEE2E2;
-  --color-danger-border: #FCA5A5;
+  /* Danger — deep red, distinct from brand maroon so REJECTED reads
+     differently from a maroon primary button. */
+  --color-danger: #B91C1C;
+  --color-danger-hover: #991717;
+  --color-danger-soft: #FBE5E5;
+  --color-danger-border: #F0BABA;
 
-  --color-info: #0284C7;
-  --color-info-soft: #E0F2FE;
-  --color-info-border: #7DD3FC;
+  /* Info — muted rust/copper. Not blue. Used for neutral status pills. */
+  --color-info: #A16207;
+  --color-info-soft: #FBF5E0;
+  --color-info-border: #E8D89C;
+
+  /* ---------- STAT TILE PASTELS ----------
+     Reference dashboards use very-light tinted tiles behind the stat cards.
+     Every tile shares the same structure; the wash makes each metric
+     visually distinct. Kept subtle — ~8% alpha on the tint. */
+  --tile-brand-bg: #FBEAEA;
+  --tile-brand-icon: var(--color-brand);
+  --tile-accent-bg: #FBF6E8;
+  --tile-accent-icon: #8A7530;
+  --tile-success-bg: #E6F4F1;
+  --tile-success-icon: var(--color-success);
+  --tile-warning-bg: #FBEFDD;
+  --tile-warning-icon: var(--color-warning);
+  --tile-danger-bg: #FBE5E5;
+  --tile-danger-icon: var(--color-danger);
+  --tile-neutral-bg: #F4F3F1;
+  --tile-neutral-icon: var(--color-text-secondary);
 
   /* ---------- TYPOGRAPHY ---------- */
   --font-family-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-  --font-family-display: Georgia, 'Times New Roman', serif;
+  --font-family-display: 'Georgia', 'Times New Roman', serif;
   --font-family-mono: 'SF Mono', Monaco, Menlo, Consolas, 'Courier New', monospace;
 
-  /* Type scale — 14px base is intentional (govt info density, not marketing) */
+  /* Type scale nudged UP one step from the old dev-tool default.
+     Reference portals read more spacious; we match. */
   --font-size-xs: 0.75rem;    /* 12px */
   --font-size-sm: 0.8125rem;  /* 13px */
   --font-size-base: 0.875rem; /* 14px */
   --font-size-md: 0.9375rem;  /* 15px */
   --font-size-lg: 1rem;       /* 16px */
   --font-size-xl: 1.125rem;   /* 18px */
-  --font-size-2xl: 1.25rem;   /* 20px */
-  --font-size-3xl: 1.5rem;    /* 24px */
-  --font-size-4xl: 1.875rem;  /* 30px */
+  --font-size-2xl: 1.375rem;  /* 22px */
+  --font-size-3xl: 1.75rem;   /* 28px */
+  --font-size-4xl: 2.25rem;   /* 36px */
 
-  --line-height-tight: 1.2;
+  --line-height-tight: 1.15;
   --line-height-snug: 1.35;
   --line-height-base: 1.5;
-  --line-height-loose: 1.7;
+  --line-height-loose: 1.75;
 
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* ---------- SPACING (4px grid) ---------- */
+  /* ---------- SPACING ---------- */
   --space-0: 0;
-  --space-1: 0.25rem;   /* 4px */
-  --space-2: 0.5rem;    /* 8px */
-  --space-3: 0.75rem;   /* 12px */
-  --space-4: 1rem;      /* 16px */
-  --space-5: 1.25rem;   /* 20px */
-  --space-6: 1.5rem;    /* 24px */
-  --space-8: 2rem;      /* 32px */
-  --space-10: 2.5rem;   /* 40px */
-  --space-12: 3rem;     /* 48px */
-  --space-16: 4rem;     /* 64px */
-  --space-20: 5rem;     /* 80px */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  /* Compat aliases — code still references --spacing-N in a few places. */
+  --spacing-0: var(--space-0);
+  --spacing-1: var(--space-1);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6);
+  --spacing-8: var(--space-8);
 
   /* ---------- RADII ---------- */
-  --radius-sm: 3px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
   --radius-full: 9999px;
 
   /* ---------- SHADOWS ---------- */
-  --shadow-xs: 0 1px 2px rgba(17, 24, 39, 0.05);
-  --shadow-sm: 0 1px 3px rgba(17, 24, 39, 0.08), 0 1px 2px rgba(17, 24, 39, 0.04);
-  --shadow-md: 0 4px 6px -1px rgba(17, 24, 39, 0.08), 0 2px 4px -1px rgba(17, 24, 39, 0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(17, 24, 39, 0.10), 0 4px 6px -2px rgba(17, 24, 39, 0.04);
-  --shadow-xl: 0 20px 25px -5px rgba(17, 24, 39, 0.12), 0 10px 10px -5px rgba(17, 24, 39, 0.04);
-  --shadow-focus: 0 0 0 3px rgba(139, 26, 26, 0.20);
+  /* Softer, warmer shadows — heritage material feel, not the harsh gray
+     drop-shadows a fintech dashboard would use. */
+  --shadow-xs: 0 1px 2px rgba(60, 40, 30, 0.05);
+  --shadow-sm: 0 1px 3px rgba(60, 40, 30, 0.06), 0 1px 2px rgba(60, 40, 30, 0.04);
+  --shadow-md: 0 4px 8px -2px rgba(60, 40, 30, 0.08), 0 2px 4px -2px rgba(60, 40, 30, 0.04);
+  --shadow-lg: 0 12px 20px -4px rgba(60, 40, 30, 0.10), 0 4px 8px -4px rgba(60, 40, 30, 0.04);
+  --shadow-xl: 0 24px 32px -8px rgba(60, 40, 30, 0.12);
+  --shadow-focus: 0 0 0 3px rgba(139, 26, 26, 0.18);
 
   /* ---------- TRANSITIONS ---------- */
-  --transition-fast: 120ms ease;
-  --transition-base: 180ms ease;
-  --transition-slow: 260ms ease;
+  --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 320ms cubic-bezier(0.4, 0, 0.2, 1);
 
   /* ---------- Z-INDEX ---------- */
   --z-dropdown: 1000;
@@ -138,16 +207,9 @@
   --z-tooltip: 1080;
 
   /* ---------- LAYOUT ---------- */
-  --sidebar-width: 240px;
-  --sidebar-width-collapsed: 64px;
-  --header-height: 56px;
+  --sidebar-width: 248px;
+  --sidebar-width-collapsed: 68px;
+  --header-height: 64px;
   --content-max-width: 1440px;
-
-  /* ---------- BREAKPOINTS (for reference — used in media queries) ----------
-     sm:  640px
-     md:  768px
-     lg: 1024px
-     xl: 1280px
-     2xl: 1536px
-  */
+  --content-padding: var(--space-6);
 }

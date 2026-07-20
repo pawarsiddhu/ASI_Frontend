@@ -61,19 +61,22 @@
 
 /* ---------- VARIANTS ---------- */
 
-/* Primary — brand maroon */
+/* Primary — brand maroon with subtle gradient + branded shadow for depth */
 .variant-primary {
-  background-color: var(--color-brand);
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-active) 100%);
   color: var(--color-text-inverse);
   border-color: var(--color-brand);
+  box-shadow: 0 1px 2px rgba(139, 26, 26, 0.25);
 }
 .variant-primary:hover:not(:disabled) {
-  background-color: var(--color-brand-hover);
+  background: linear-gradient(135deg, var(--color-brand-hover) 0%, var(--color-brand-active) 100%);
   border-color: var(--color-brand-hover);
+  box-shadow: 0 2px 6px rgba(139, 26, 26, 0.30);
 }
 .variant-primary:active:not(:disabled) {
-  background-color: var(--color-brand-active);
+  background: var(--color-brand-active);
   border-color: var(--color-brand-active);
+  box-shadow: 0 1px 2px rgba(139, 26, 26, 0.20);
 }
 
 /* Secondary — bordered, neutral */

@@ -1,37 +1,41 @@
-import { FileText, BarChart3, Settings, Layers } from 'lucide-react';
+import { Inbox, Send, CheckCircle2, FileText } from 'lucide-react';
 import DashboardLayout from '../components/DashboardLayout';
+import { useDashboardData } from '../useDashboardData';
+import { ROLES } from '@utils/constants';
+import { STATUS } from '@features/antiquities/schema';
 
 const QUICK_ACTIONS = [
   {
-    label: 'All Records',
-    description: 'Antiquities, BHS, and Sites across all circles',
-    icon: FileText,
+    label: 'My Review Queue',
+    description: 'Records forwarded to Admin',
+    icon: Inbox,
     iconColor: 'brand',
-    to: '/records/antiquities',
+    to: `/records/antiquities?status=${STATUS.ADMIN_REVIEW}`,
   },
   {
-    label: 'Generate Reports',
-    description: 'State/District/Tehsil breakdowns, export PDF',
-    icon: BarChart3,
+    label: 'Publish Queue',
+    description: 'Awaiting Super Admin',
+    icon: Send,
     iconColor: 'accent',
-    phase: 'Day 3',
+    to: `/records/antiquities?status=${STATUS.PUBLISH_QUEUE}`,
   },
   {
-    label: 'C-Panel',
-    description: 'Manage users, dropdowns, master tables',
-    icon: Settings,
-    iconColor: 'info',
-    phase: 'Later',
-  },
-  {
-    label: 'CMS',
-    description: 'Notices, events, gallery, outreach content',
-    icon: Layers,
+    label: 'Published',
+    description: 'Anchored on the ledger',
+    icon: CheckCircle2,
     iconColor: 'success',
-    phase: 'Later',
+    to: `/records/antiquities?status=${STATUS.PUBLISHED}`,
+  },
+  {
+    label: 'All Records',
+    description: 'Antiquities across all circles',
+    icon: FileText,
+    iconColor: 'info',
+    to: '/records/antiquities',
   },
 ];
 
 export default function AdminDashboard() {
-  return <DashboardLayout quickActions={QUICK_ACTIONS} />;
+  const dash = useDashboardData(ROLES.ADMIN);
+  return <DashboardLayout {...dash} quickActions={QUICK_ACTIONS} eyebrow="Administrator" title="Administrator Overview" subtitle="Records at your review stage and system-wide activity." />;
 }

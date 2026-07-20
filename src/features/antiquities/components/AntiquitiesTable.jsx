@@ -1,29 +1,36 @@
 import { ArrowUp, ArrowDown, ArrowUpDown, Eye } from 'lucide-react';
-import Badge from '@components/Badge';
 import Button from '@components/Button';
 import Skeleton from '@components/Skeleton';
 import EmptyState from '@components/EmptyState';
 import StatusBadge from './StatusBadge';
-import { CATEGORY_LABEL } from '../schema';
+import { getCircleLabel } from '@features/circles';
 import styles from './AntiquitiesTable.module.css';
 
+/**
+ * Columns match the RecordSummary shape from GET /records exactly:
+ *   id, type, title, status, current_level, circle, created_by, created_at.
+ *
+ * `accession_number` and `category` are NOT on the summary — they live on
+ * the merged detail row and only appear on GET /records/:id. We deliberately
+ * don't over-fetch to show them in the list; users get them on the detail
+ * page.
+ */
 const COLUMNS = [
-  { key: 'accessionNo', label: 'Accession No.', sortable: false, width: 190 },
-  { key: 'name', label: 'Name', sortable: true },
-  { key: 'category', label: 'Category', sortable: false, width: 130 },
+  { key: 'title', label: 'Title', sortable: true },
   { key: 'circle', label: 'Circle', sortable: false, width: 160 },
   { key: 'status', label: 'Status', sortable: true, width: 200 },
-  { key: 'updatedAt', label: 'Updated', sortable: true, width: 130 },
+  { key: 'created_at', label: 'Created', sortable: true, width: 130 },
   { key: 'actions', label: '', sortable: false, width: 80 },
 ];
 
 /**
- * AntiquitiesTable — the results grid.
+ * AntiquitiesTable — results grid.
  *
  * @param {object} props
- * @param {Array} props.items
+ * @param {Array} props.items — RecordSummary[] rows for the visible page.
  * @param {boolean} [props.isLoading]
- * @param {boolean} [props.isFetching] — soft loading (query re-runs, keep old data visible)
+ * @param {boolean} [props.isFetching] — soft loading; keeps old rows visible
+ *   at reduced opacity while the query re-runs.
  * @param {string} props.sortBy
  * @param {'asc'|'desc'} props.sortOrder
  * @param {(key: string) => void} props.onSort
@@ -41,7 +48,6 @@ export default function AntiquitiesTable({
   return (
     <div
       className={styles.wrapper}
-      // A soft loading state — dim the table while the query re-runs.
       style={{ opacity: isFetching && !isLoading ? 0.55 : 1 }}
     >
       <table className={styles.table}>
@@ -93,27 +99,25 @@ export default function AntiquitiesTable({
                 className={onRowClick ? styles.rowClickable : ''}
                 onClick={() => onRowClick?.(item)}
               >
-                <td className={styles.accessionCell}>
-                  <code>{item.accessionNo}</code>
-                </td>
                 <td>
                   <div className={styles.nameCell}>
-                    <span className={styles.nameText}>{item.name}</span>
+                    <span className={styles.nameText}>
+                      {item.title || <em>Untitled</em>}
+                    </span>
                     <span className={styles.materialText}>
-                      {item.material} · {item.period.split(' (')[0]}
+                      Record #{item.id}
                     </span>
                   </div>
                 </td>
-                <td>
-                  <Badge size="sm">
-                    {CATEGORY_LABEL[item.category] || item.category}
-                  </Badge>
+                <td className={styles.circleCell}>
+                  {getCircleLabel(item.circle)}
                 </td>
-                <td className={styles.circleCell}>{item.circle.name}</td>
                 <td>
                   <StatusBadge status={item.status} />
                 </td>
-                <td className={styles.dateCell}>{formatDate(item.updatedAt)}</td>
+                <td className={styles.dateCell}>
+                  {formatDate(item.created_at)}
+                </td>
                 <td className={styles.actionsCell}>
                   <Button
                     variant="ghost"
@@ -123,7 +127,7 @@ export default function AntiquitiesTable({
                       e.stopPropagation();
                       onRowClick?.(item);
                     }}
-                    aria-label={`View ${item.name}`}
+                    aria-label={`View ${item.title || 'record'}`}
                   >
                     View
                   </Button>

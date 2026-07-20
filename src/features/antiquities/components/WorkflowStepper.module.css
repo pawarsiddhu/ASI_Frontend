@@ -1,0 +1,320 @@
+/* =========================================================================
+   WorkflowStepper — horizontal stage bar
+
+   Reads left → right as the record's journey through the ASI approval flow.
+   Each stage is a clickable node with role-tinted color; connectors between
+   nodes darken as the record progresses.
+   ========================================================================= */
+
+.wrapper {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-4);
+  box-shadow: var(--shadow-xs);
+}
+
+.rail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  overflow-x: auto;
+}
+
+.stageWrap {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 140px;
+}
+
+/* ---------- Stage button ---------- */
+.stageBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: transparent;
+  border: 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  min-width: 0;
+  flex: 1;
+  transition: background var(--transition-fast);
+}
+.stageBtn:hover { background: var(--color-bg-muted); }
+.stageBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+.stageSelected { background: var(--color-brand-soft); }
+
+/* ---------- Node circle ---------- */
+.node {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--color-bg-muted);
+  color: var(--color-text-muted);
+  border: 2px solid var(--color-border-default);
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+/* State-driven node styling */
+.stage_complete .node {
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: #fff;
+}
+.stage_current .node {
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-active) 100%);
+  border-color: var(--color-accent);
+  color: #fff;
+  box-shadow: 0 0 0 4px var(--color-brand-soft);
+}
+.stage_rejected .node {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #fff;
+}
+.stage_aborted .node {
+  background: var(--color-bg-muted);
+  border-color: var(--color-border-default);
+  color: var(--color-gray-400);
+  opacity: 0.5;
+  border-style: dashed;
+}
+.stage_pending .node {
+  background: var(--color-bg-surface);
+  border-color: var(--color-border-default);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Stage body (label + meta + notes badge) ---------- */
+.stageBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.stageLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+.stageMeta {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  line-height: var(--line-height-tight);
+}
+.stage_current .stageMeta { color: var(--color-brand); font-weight: var(--font-weight-medium); }
+.stage_rejected .stageMeta { color: var(--color-danger); font-weight: var(--font-weight-medium); }
+.stage_complete .stageMeta { color: var(--color-success); }
+.stage_aborted .stageLabel,
+.stage_aborted .stageMeta { color: var(--color-gray-400); }
+
+.notesBadge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-accent-soft);
+  color: var(--tile-accent-icon);
+  border: 1px solid var(--color-accent-border);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Connector line between stages ---------- */
+.connector {
+  flex: 1;
+  min-width: 12px;
+  height: 2px;
+  background: var(--color-border-default);
+  margin: 0 var(--space-1);
+}
+.connector_complete { background: var(--color-success); }
+.connector_current  {
+  background: linear-gradient(to right, var(--color-success) 0%, var(--color-border-default) 100%);
+}
+.connector_rejected {
+  background: var(--color-danger);
+  opacity: 0.5;
+}
+.connector_aborted {
+  background: transparent;
+  border-top: 2px dashed var(--color-border-default);
+  height: 0;
+  opacity: 0.5;
+}
+
+/* ---------- Expanded stage detail ---------- */
+.detail {
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  background: var(--color-bg-muted);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-brand);
+}
+
+.detailHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.detailStage {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+.detailTs {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  font-family: var(--font-family-mono);
+}
+.closeBtn {
+  background: transparent;
+  border: 0;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.closeBtn:hover { background: var(--color-bg-surface); color: var(--color-text-primary); }
+
+.detailEmpty {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.noteList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.noteItem {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+}
+.noteHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+  flex-wrap: wrap;
+}
+.noteAction {
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+}
+.noteAction[data-action='FORWARD'] { background: var(--color-success-soft); color: var(--color-success); }
+.noteAction[data-action='RETURN']  { background: var(--color-warning-soft); color: var(--color-warning); }
+.noteAction[data-action='REJECT']  { background: var(--color-danger-soft);  color: var(--color-danger); }
+.noteAction[data-action='PUBLISH'] { background: var(--color-brand-soft);   color: var(--color-brand); }
+.noteAction[data-action='EDIT']    { background: var(--color-accent-soft);  color: var(--tile-accent-icon); }
+.noteBy { font-weight: var(--font-weight-medium); color: var(--color-text-secondary); }
+.noteTime { margin-left: auto; }
+
+.noteQuote {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-left: 2px solid var(--color-border-default);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-snug);
+  font-style: italic;
+  background: var(--color-bg-muted);
+}
+
+/* ---------- Returned callout ---------- */
+.returnedCallout {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-warning-soft);
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius-md);
+}
+.returnedIcon {
+  color: var(--color-warning);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.returnedBody { flex: 1; min-width: 0; }
+.returnedTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-warning-hover);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.returnedSep { color: var(--color-warning-border); }
+.returnedTs {
+  font-weight: var(--font-weight-normal);
+  color: var(--color-warning);
+}
+.returnedNote {
+  margin: var(--space-2) 0 0 0;
+  padding: var(--space-2) var(--space-3);
+  border-left: 2px solid var(--color-warning);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-snug);
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* ---------- Responsive: stack stages on narrow screens ---------- */
+@media (max-width: 900px) {
+  .rail {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .stageWrap { flex-direction: column; width: 100%; }
+  .connector {
+    width: 2px;
+    height: 20px;
+    margin: 0 0 0 20px;
+    align-self: flex-start;
+  }
+  .stageBtn { width: 100%; }
+}

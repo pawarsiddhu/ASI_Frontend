@@ -1,0 +1,55 @@
+/* Card gets a subtle hover lift to feel less flat — was one of the
+   "looks basic" complaints. */
+.card {
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+}
+
+.header {
+  padding-bottom: var(--spacing-2);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  width: 100%;
+}
+
+/* Icon badge next to section title — a small tinted square with the section
+   icon. Same brand tint across all sections keeps it cohesive; the icons
+   differentiate one section from the next. */
+.iconBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-brand) 12%, var(--color-surface)) 0%,
+    color-mix(in srgb, var(--color-brand) 4%, var(--color-surface)) 100%
+  );
+  color: var(--color-brand);
+  border: 1px solid color-mix(in srgb, var(--color-brand) 20%, transparent);
+  flex-shrink: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-4) var(--spacing-6);
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

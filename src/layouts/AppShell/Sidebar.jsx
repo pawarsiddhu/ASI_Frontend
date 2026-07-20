@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react';
 import Badge from '@components/Badge';
+import { ASIMark } from '@components/HeritageArt';
 import { useAuth } from '@hooks/useAuth';
 import { getNavigationForRole } from './navigation';
 import { ROLE_LABELS } from '@utils/constants';
@@ -44,7 +45,9 @@ export default function Sidebar({
 
       <aside className={classes} aria-label="Primary navigation">
         <div className={styles.brand}>
-          <div className={styles.logo}>A</div>
+          <div className={styles.logo}>
+            <ASIMark size={22} />
+          </div>
           {!collapsed && (
             <div className={styles.brandText}>
               <div className={styles.brandTitle}>ASI Portal</div>
@@ -125,7 +128,7 @@ function NavItem({ item, collapsed, onClick }) {
     <li>
       <NavLink
         to={item.to}
-        end
+        end={item.to === '/' || item.exact}
         onClick={onClick}
         className={({ isActive }) =>
           [styles.item, isActive ? styles.itemActive : ''].filter(Boolean).join(' ')

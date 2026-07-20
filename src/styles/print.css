@@ -1,0 +1,85 @@
+/* =========================================================================
+   Print styles
+   Applied only when the user prints. Strategy:
+     - Hide the app shell (sidebar, header, action bars, footers)
+     - Let the main content take the full page
+     - Force page-friendly colors + font sizes
+   Component-specific pages add their own @media print rules for
+   finer-grained control (see AntiquityDetailPage.module.css).
+   ========================================================================= */
+
+@media print {
+  /* Reset page margins to something sane */
+  @page {
+    size: A4;
+    margin: 14mm 12mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    font-size: 11pt;
+  }
+
+  /* Nuke the shell chrome — sidebar, header, breadcrumbs, action bars.
+     Uses stable data-print attributes so we don't break if CSS modules
+     change their hashed class names. */
+  [data-print-hide],
+  [data-print="hide"] {
+    display: none !important;
+  }
+
+  /* If the app shell wrapper is present, undo its layout so main content
+     fills the printable area. */
+  [data-print-root] {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #fff !important;
+  }
+
+  /* Anchor cards + sections to page breaks — keep them together */
+  section,
+  article,
+  .card,
+  [data-print-block] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Links — strip the underline color; footnote the href in parentheses.
+     Skip in-app anchors (#), mailto, and data URLs to avoid clutter. */
+  a[href]:not([href^="#"]):not([href^="mailto:"]):not([href^="data:"])::after {
+    content: ' (' attr(href) ')';
+    font-size: 9pt;
+    color: #444;
+  }
+
+  /* Buttons in printed layouts are useless */
+  button {
+    display: none !important;
+  }
+
+  /* Tables — force borders so rows separate cleanly */
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  th,
+  td {
+    border: 1px solid #999 !important;
+    padding: 4px 6px !important;
+    font-size: 10pt !important;
+  }
+
+  /* Skip animation delays — some browsers pause layout on them */
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

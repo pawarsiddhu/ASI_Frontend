@@ -1,46 +1,64 @@
-import { Search, X, SlidersHorizontal } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import Input from '@components/Input';
 import Select from '@components/Select';
 import Button from '@components/Button';
-import Badge from '@components/Badge';
-import {
-  STATUS_OPTIONS,
-  CATEGORY_OPTIONS,
-  CIRCLE_OPTIONS,
-} from '../schema';
+import { STATUS, STATUS_LABEL } from '../schema';
+import { useCircles } from '@features/circles';
 import styles from './FilterBar.module.css';
 
 /**
- * FilterBar — search + status/circle/category dropdowns + reset.
+ * FilterBar — pill-chip filters for record lists.
  *
- * Fully controlled. Parent debounces `search` before firing the query.
+ * Redesigned after the demo — the earlier dropdown-heavy version read as an
+ * admin form, not a browse tool. Now the primary status filter is a row of
+ * pill chips (the pattern the reference screenshots use for their main
+ * segmentation control) and only Circle stays as a dropdown because it has
+ * enough options that chips would wrap onto three rows.
  *
- * @param {object} props
- * @param {{ search: string, status: string, circle: string, category: string }} props.filters
- * @param {(patch: object) => void} props.onChange — receives {key: value}
- * @param {() => void} props.onReset
- * @param {boolean} [props.canFilterByCircle=true] — hide the Circle filter for
- *   users who only see their own circle (RD, Supervisor) since it's redundant
+ * Circle options come from GET /circles via useCircles (see @features/circles).
+ * If the fetch fails, useCircles serves a small fallback set so the filter
+ * remains usable during a demo. Client-side filtering; parent debounces
+ * `search`.
  */
+
+// Order matters — this is the reading order in the pill row.
+// Some backend statuses collapse (e.g. all "pending X" states surface here
+// under a single "In Review" chip) to keep the row scannable.
+const STATUS_CHIPS = [
+  { key: '',                          label: 'All' },
+  { key: STATUS.DRAFT,                label: STATUS_LABEL[STATUS.DRAFT] },
+  { key: STATUS.SUPERVISOR_REVIEW,    label: STATUS_LABEL[STATUS.SUPERVISOR_REVIEW] },
+  { key: STATUS.ADMIN_REVIEW,         label: STATUS_LABEL[STATUS.ADMIN_REVIEW] },
+  { key: STATUS.PUBLISH_QUEUE,        label: STATUS_LABEL[STATUS.PUBLISH_QUEUE] },
+  { key: STATUS.RETURNED,             label: STATUS_LABEL[STATUS.RETURNED] },
+  { key: STATUS.PUBLISHED,            label: STATUS_LABEL[STATUS.PUBLISHED] },
+  { key: STATUS.REJECTED,             label: STATUS_LABEL[STATUS.REJECTED] },
+];
+
 export default function FilterBar({
   filters,
   onChange,
   onReset,
   canFilterByCircle = true,
 }) {
-  const { search, status, circle, category } = filters;
+  const { search, status, circle } = filters;
+  const hasActiveFilters = Boolean(search || status || circle);
 
-  const activeCount =
-    (status ? 1 : 0) + (circle ? 1 : 0) + (category ? 1 : 0);
+  // Live circle list from the backend. During the initial fetch `options`
+  // is empty; we still render the Select (with just "All circles") so the
+  // filter row doesn't reflow when data arrives.
+  const { options: circleOptions, isLoading: circlesLoading } = useCircles();
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.searchWrap}>
+      {/* Search — full-width, prominent */}
+      <div className={styles.searchRow}>
         <Input
-          placeholder="Search by name or accession number…"
-          leftIcon={<Search size={14} />}
+          placeholder="Search by title or record ID…"
+          leftIcon={<Search size={16} />}
           value={search}
           onChange={(e) => onChange({ search: e.target.value })}
+          size="lg"
           rightIcon={
             search ? (
               <button
@@ -56,56 +74,50 @@ export default function FilterBar({
         />
       </div>
 
-      <div className={styles.filters}>
-        <div className={styles.filterIcon}>
-          <SlidersHorizontal size={14} />
-          <span>Filters</span>
-          {activeCount > 0 && (
-            <Badge size="sm" variant="primary">
-              {activeCount}
-            </Badge>
-          )}
+      {/* Filter row: status chips on the left, circle dropdown + reset on the right */}
+      <div className={styles.filterRow}>
+        <div className={styles.chipGroup} role="tablist" aria-label="Filter by status">
+          {STATUS_CHIPS.map((chip) => {
+            const active = status === chip.key;
+            return (
+              <button
+                key={chip.key || 'all'}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                className={`${styles.chip} ${active ? styles.chipActive : ''}`}
+                onClick={() => onChange({ status: chip.key })}
+              >
+                {chip.label}
+              </button>
+            );
+          })}
         </div>
 
-        <Select
-          size="sm"
-          placeholder="All statuses"
-          value={status}
-          onChange={(e) => onChange({ status: e.target.value })}
-          options={[{ value: '', label: 'All statuses' }, ...STATUS_OPTIONS]}
-        />
-
-        {canFilterByCircle && (
-          <Select
-            size="sm"
-            placeholder="All circles"
-            value={circle}
-            onChange={(e) => onChange({ circle: e.target.value })}
-            options={[{ value: '', label: 'All circles' }, ...CIRCLE_OPTIONS]}
-          />
-        )}
-
-        <Select
-          size="sm"
-          placeholder="All categories"
-          value={category}
-          onChange={(e) => onChange({ category: e.target.value })}
-          options={[
-            { value: '', label: 'All categories' },
-            ...CATEGORY_OPTIONS,
-          ]}
-        />
-
-        {(search || activeCount > 0) && (
-          <Button
-            variant="ghost"
-            size="sm"
-            leftIcon={<X size={12} />}
-            onClick={onReset}
-          >
-            Reset
-          </Button>
-        )}
+        <div className={styles.rightGroup}>
+          {canFilterByCircle && (
+            <Select
+              size="sm"
+              value={circle}
+              onChange={(e) => onChange({ circle: e.target.value })}
+              disabled={circlesLoading}
+              options={[
+                { value: '', label: circlesLoading ? 'Loading…' : 'All circles' },
+                ...circleOptions,
+              ]}
+            />
+          )}
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              leftIcon={<X size={12} />}
+              onClick={onReset}
+            >
+              Reset
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

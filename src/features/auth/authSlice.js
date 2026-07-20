@@ -1,28 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { AUTH_TOKEN_KEY } from '@utils/constants';
+import { readAuth, writeAuth, clearAuth } from './authStorage';
 
 /**
  * Auth slice — the only place UI state around the current user lives.
  *
- * Token is persisted to localStorage. On boot, initial state reads it back
- * so refreshes don't kick the user out. `main.jsx` then fires GET /auth/me
- * to hydrate the actual user object.
+ * Rehydration model: on boot, initial state reads BOTH the token and the user
+ * back from localStorage in one synchronous shot. There is no `/auth/me` call
+ * because the real backend does not expose that endpoint — the user object
+ * received at login time is the source of truth for the session's lifetime.
  *
- * States: idle → loading → authenticated | error
+ * Safety: the token is still the only thing that authorises API calls. A
+ * tampered `user` blob in localStorage can trick the UI briefly, but the
+ * backend enforces the actual role from the JWT on every request.
  */
 
-const readInitialToken = () => {
-  try {
-    return localStorage.getItem(AUTH_TOKEN_KEY) || null;
-  } catch {
-    return null;
-  }
-};
+const persisted = readAuth();
 
 const initialState = {
-  token: readInitialToken(),
-  user: null,
-  status: 'idle', // 'idle' | 'loading' | 'authenticated' | 'error'
+  token: persisted?.token ?? null,
+  user: persisted?.user ?? null,
 };
 
 const authSlice = createSlice({
@@ -30,57 +26,35 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     /**
-     * Called after successful login. Persists the token, stores the user.
+     * Called after a successful login. Persists both pieces together.
+     * Accepts the flat backend response shape: { token, user }.
      */
     setCredentials(state, action) {
       const { token, user } = action.payload;
       state.token = token;
       state.user = user;
-      state.status = 'authenticated';
-      try {
-        localStorage.setItem(AUTH_TOKEN_KEY, token);
-      } catch {
-        /* localStorage disabled — token stays in-memory only */
-      }
+      writeAuth({ token, user });
     },
 
     /**
-     * Called by /auth/me on boot when a persisted token turned out to be valid.
-     */
-    setUser(state, action) {
-      state.user = action.payload;
-      state.status = 'authenticated';
-    },
-
-    setAuthStatus(state, action) {
-      state.status = action.payload;
-    },
-
-    /**
-     * Full logout — clears state and localStorage.
+     * Full logout — clears in-memory state and localStorage together.
+     * Also fired by the axios 401 interceptor.
      */
     logout(state) {
       state.token = null;
       state.user = null;
-      state.status = 'idle';
-      try {
-        localStorage.removeItem(AUTH_TOKEN_KEY);
-      } catch {
-        /* ignore */
-      }
+      clearAuth();
     },
   },
 });
 
 // --- Actions ---
-export const { setCredentials, setUser, setAuthStatus, logout } =
-  authSlice.actions;
+export const { setCredentials, logout } = authSlice.actions;
 
 // --- Selectors ---
 export const selectAuthToken = (state) => state.auth.token;
 export const selectCurrentUser = (state) => state.auth.user;
 export const selectCurrentRole = (state) => state.auth.user?.role ?? null;
-export const selectAuthStatus = (state) => state.auth.status;
 export const selectIsAuthenticated = (state) => Boolean(state.auth.token);
 
 export default authSlice.reducer;

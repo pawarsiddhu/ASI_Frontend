@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation, Navigate, Link } from 'react-router-dom';
-import { LogIn, Mail, Lock, Info, ChevronDown } from 'lucide-react';
+import { LogIn, User, Lock, Info, ChevronDown } from 'lucide-react';
 
 import Button from '@components/Button';
 import Input from '@components/Input';
 import { useToast } from '@components/Toast';
+import { MonumentSkyline, HeritageMotif, ASIMark } from '@components/HeritageArt';
 
 import { useLoginMutation } from './authApi';
 import { setCredentials } from './authSlice';
@@ -19,15 +20,15 @@ import styles from './LoginPage.module.css';
  * Removed once real accounts exist.
  */
 const TEST_USERS = [
-  { email: 'operator@nmma', label: ROLE_LABELS[ROLES.OPERATOR] },
-  { email: 'supervisor@nmma', label: ROLE_LABELS[ROLES.SUPERVISOR] },
-  { email: 'admin@nmma', label: ROLE_LABELS[ROLES.ADMIN] },
-  { email: 'superadmin@nmma', label: ROLE_LABELS[ROLES.SUPERADMIN] },
-  { email: 'rd@nmma', label: ROLE_LABELS[ROLES.RD] },
+  { username: 'operator1', label: ROLE_LABELS[ROLES.OPERATOR] },
+  { username: 'supervisor1', label: ROLE_LABELS[ROLES.SUPERVISOR] },
+  { username: 'admin1', label: ROLE_LABELS[ROLES.ADMIN] },
+  { username: 'superadmin1', label: ROLE_LABELS[ROLES.SUPERADMIN] },
+  { username: 'director1', label: ROLE_LABELS[ROLES.RD] },
 ];
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [showTestCreds, setShowTestCreds] = useState(false);
@@ -46,8 +47,7 @@ export default function LoginPage() {
 
   const validate = () => {
     const next = {};
-    if (!email.trim()) next.email = 'Email is required.';
-    else if (!/^\S+@\S+/.test(email)) next.email = 'Enter a valid email address.';
+    if (!username.trim()) next.username = 'Username is required.';
     if (!password) next.password = 'Password is required.';
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -57,9 +57,11 @@ export default function LoginPage() {
     e.preventDefault();
     if (!validate()) return;
     try {
-      const result = await login({ email, password }).unwrap();
+      const result = await login({ username, password }).unwrap();
       dispatch(setCredentials(result));
-      toast.success(`Welcome, ${result.user.name}`);
+      // Backend user shape is { id, username, role } — no `name` — so we fall
+      // back to username. Mock users still have `name`, so both work.
+      toast.success(`Welcome, ${result.user.name || result.user.username}`);
       const from = location.state?.from?.pathname;
       const destination = from || ROLE_HOME_ROUTE[result.user.role] || '/';
       navigate(destination, { replace: true });
@@ -69,9 +71,9 @@ export default function LoginPage() {
     }
   };
 
-  const useTestUser = (testEmail) => {
-    setEmail(testEmail);
-    setPassword('password');
+  const useTestUser = (testUsername) => {
+    setUsername(testUsername);
+    setPassword('password123');
     setErrors({});
   };
 
@@ -79,9 +81,15 @@ export default function LoginPage() {
     <div className={styles.page}>
       {/* -------- Left panel: branding -------- */}
       <aside className={styles.brandPanel}>
+        {/* Decorative heritage motif — sits behind the content, corner-anchored,
+            large and rotated so it reads as a watermark rather than a discrete image. */}
+        <HeritageMotif className={styles.motif} size={520} opacity={0.08} />
+
         <div className={styles.brandInner}>
           <div className={styles.brandHead}>
-            <div className={styles.logo}>A</div>
+            <div className={styles.logo}>
+              <ASIMark size={30} />
+            </div>
             <div>
               <div className={styles.brandTitle}>ASI Internal Portal</div>
               <div className={styles.brandSubtitle}>
@@ -117,6 +125,9 @@ export default function LoginPage() {
             Government of India · Ministry of Culture
           </div>
         </div>
+
+        {/* Skyline runs edge-to-edge along the bottom of the brand panel. */}
+        <MonumentSkyline className={styles.skyline} opacity={0.18} />
       </aside>
 
       {/* -------- Right panel: form -------- */}
@@ -131,17 +142,17 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className={styles.form} noValidate>
             <Input
-              label="Email address"
-              type="email"
-              autoComplete="email"
-              placeholder="you@nmma"
-              leftIcon={<Mail size={14} />}
-              value={email}
+              label="Username"
+              type="text"
+              autoComplete="username"
+              placeholder="e.g. operator1"
+              leftIcon={<User size={14} />}
+              value={username}
               onChange={(e) => {
-                setEmail(e.target.value);
-                if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
+                setUsername(e.target.value);
+                if (errors.username) setErrors((prev) => ({ ...prev, username: undefined }));
               }}
-              error={errors.email}
+              error={errors.username}
               required
               size="lg"
             />
@@ -207,18 +218,18 @@ export default function LoginPage() {
               <div className={styles.testCredsBody}>
                 <p className={styles.testCredsNote}>
                   Click any user below to autofill the form. Password for all is{' '}
-                  <code>password</code>.
+                  <code>password123</code>.
                 </p>
                 <ul className={styles.testCredsList}>
                   {TEST_USERS.map((u) => (
-                    <li key={u.email}>
+                    <li key={u.username}>
                       <button
                         type="button"
                         className={styles.testCredsItem}
-                        onClick={() => useTestUser(u.email)}
+                        onClick={() => useTestUser(u.username)}
                       >
                         <span className={styles.testCredsRole}>{u.label}</span>
-                        <code>{u.email}</code>
+                        <code>{u.username}</code>
                       </button>
                     </li>
                   ))}

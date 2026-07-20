@@ -1,130 +1,125 @@
+/* =========================================================================
+   Sidebar — dark charcoal-plum, gold-accented active state
+   ========================================================================= */
+
 .sidebar {
   width: var(--sidebar-width);
-  background-color: var(--color-bg-surface);
-  border-right: 1px solid var(--color-border-subtle);
+  min-height: 100vh;
+  background: var(--color-sidebar-bg);
+  color: var(--color-sidebar-text);
   display: flex;
   flex-direction: column;
+  transition: width var(--transition-base);
   flex-shrink: 0;
-  height: 100vh;
+  border-right: 1px solid var(--color-sidebar-divider);
   position: sticky;
   top: 0;
-  transition: width var(--transition-base);
-  overflow: hidden;
+  height: 100vh;
+  overflow-y: auto;
 }
+.sidebar.collapsed { width: var(--sidebar-width-collapsed); }
 
-.collapsed {
-  width: var(--sidebar-width-collapsed);
-}
-
-/* ---------- Brand ---------- */
+/* ---------- Brand block at the top ---------- */
 .brand {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 0 var(--space-4);
-  height: var(--header-height);
-  border-bottom: 1px solid var(--color-border-subtle);
-  flex-shrink: 0;
+  padding: var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--color-sidebar-divider);
+  min-height: var(--header-height);
 }
 
 .logo {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-md);
-  background-color: var(--color-brand);
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-active) 100%);
   color: var(--color-accent);
-  font-family: var(--font-family-display);
-  font-size: 18px;
-  font-weight: var(--font-weight-bold);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25),
+              inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-.brandText {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
+.brandText { min-width: 0; }
 .brandTitle {
   font-family: var(--font-family-display);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+  color: var(--color-sidebar-text-strong);
+  letter-spacing: -0.01em;
   line-height: 1.15;
-  white-space: nowrap;
 }
-
 .brandSubtitle {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  white-space: nowrap;
+  font-size: 10px;
+  color: var(--color-sidebar-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: var(--font-weight-semibold);
+  margin-top: 2px;
 }
 
-/* ---------- Nav ---------- */
+/* ---------- Nav list ---------- */
 .nav {
   flex: 1;
-  padding: var(--space-4) var(--space-2);
+  padding: var(--space-4) var(--space-3);
   overflow-y: auto;
 }
+.nav ul { list-style: none; margin: 0; padding: 0; }
+.nav ul + .sectionLabel { margin-top: var(--space-6); }
 
+/* Section labels ("OPERATOR", "MENU", etc.) — small caps, muted, above each group */
 .sectionLabel {
-  font-size: 0.6875rem; /* 11px */
+  font-size: 10px;
+  color: var(--color-sidebar-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.14em;
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-muted);
-  padding: var(--space-2) var(--space-3);
+  padding: 0 var(--space-3) var(--space-2);
   margin-bottom: var(--space-1);
 }
 
-.nav ul {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-/* ---------- Items ---------- */
+/* Nav items */
 .item {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-3);
   border-radius: var(--radius-md);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
+  color: var(--color-sidebar-text);
   text-decoration: none;
-  transition: background-color var(--transition-fast), color var(--transition-fast);
-  min-height: 36px;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  margin: 2px 0;
+  position: relative;
 }
-
-.item:hover:not(.itemDisabled) {
-  background-color: var(--color-gray-100);
-  color: var(--color-text-primary);
+.item:hover {
+  background: var(--color-sidebar-hover);
+  color: var(--color-sidebar-text-strong);
 }
 
 .itemActive {
-  background-color: var(--color-brand-soft);
-  color: var(--color-brand);
+  background: var(--color-sidebar-active-bg);
+  color: var(--color-sidebar-text-strong);
 }
-
-.itemActive:hover {
-  background-color: var(--color-brand-soft);
-  color: var(--color-brand);
-}
-
-.itemActive .itemIcon {
-  color: var(--color-brand);
+/* Gold accent bar on the left edge of the active item — heritage detail */
+.itemActive::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--color-accent);
 }
 
 .itemDisabled {
-  color: var(--color-text-muted);
+  opacity: 0.4;
   cursor: not-allowed;
-  opacity: 0.65;
 }
 
 .itemIcon {
@@ -132,72 +127,57 @@
   align-items: center;
   justify-content: center;
   width: 20px;
+  height: 20px;
+  color: currentColor;
   flex-shrink: 0;
-  color: var(--color-text-muted);
 }
+.itemLabel { flex: 1; }
 
-.itemLabel {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+/* Collapsed state — center icons, hide text */
+.collapsed .brandText,
+.collapsed .brandSubtitle,
+.collapsed .sectionLabel,
+.collapsed .itemLabel { display: none; }
+.collapsed .brand { justify-content: center; padding: var(--space-5) 0; }
+.collapsed .item { justify-content: center; padding: var(--space-3) 0; }
 
-/* ---------- Collapse toggle ---------- */
+/* ---------- Collapse toggle at the bottom ---------- */
 .collapseToggle {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  justify-content: flex-start;
   padding: var(--space-3) var(--space-4);
-  border-top: 1px solid var(--color-border-subtle);
-  color: var(--color-text-muted);
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--color-sidebar-divider);
+  color: var(--color-sidebar-text-muted);
+  cursor: pointer;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
-  transition: background-color var(--transition-fast), color var(--transition-fast);
-  flex-shrink: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
 }
-
 .collapseToggle:hover {
-  background-color: var(--color-gray-50);
-  color: var(--color-text-primary);
+  background: var(--color-sidebar-hover);
+  color: var(--color-sidebar-text-strong);
 }
-
-.collapsed .collapseToggle {
-  justify-content: center;
-  padding: var(--space-3);
-}
-
-.collapsed .brand {
-  justify-content: center;
-  padding: 0;
-}
+.collapsed .collapseToggle { justify-content: center; padding: var(--space-3) 0; }
+.collapsed .collapseToggle span { display: none; }
 
 /* ---------- Mobile drawer ---------- */
 .mobile {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: var(--z-fixed);
-  height: 100vh;
+  bottom: 0;
+  z-index: var(--z-modal);
   transform: translateX(-100%);
-  box-shadow: var(--shadow-lg);
   transition: transform var(--transition-base);
+  box-shadow: var(--shadow-xl);
 }
-
-.mobileOpen {
-  transform: translateX(0);
-}
-
+.mobileOpen { transform: translateX(0); }
 .backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(17, 24, 39, 0.4);
-  z-index: var(--z-modal-backdrop);
-  animation: fadeIn var(--transition-fast);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  background: rgba(0, 0, 0, 0.5);
+  z-index: calc(var(--z-modal) - 1);
 }

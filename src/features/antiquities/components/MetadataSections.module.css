@@ -1,0 +1,88 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.section {
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border-subtle);
+  margin-bottom: var(--space-5);
+}
+.section[data-last='true'] {
+  border-bottom: 0;
+  padding-bottom: var(--space-3);
+  margin-bottom: 0;
+}
+
+.heading {
+  font-family: var(--font-family-display);
+  font-size: 15px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-3);
+  letter-spacing: -0.005em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+  font-size: 12.5px;
+}
+
+.pair {
+  display: contents;
+}
+
+.pairLong dd {
+  /* When a field is marked `long`, the value can wrap over multiple lines
+     without the label losing its position */
+  line-height: var(--line-height-snug);
+}
+
+.label {
+  color: var(--color-text-muted);
+  margin: 0;
+  padding: 3px 0;
+}
+
+.value {
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 3px 0;
+  min-width: 0;
+  word-break: break-word;
+}
+.valueMono {
+  font-family: var(--font-family-mono);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+.valueEmpty { color: var(--color-text-muted); }
+
+/* --- Meta strip at the bottom --- */
+.metaStrip {
+  display: flex;
+  gap: var(--space-6);
+  padding-top: var(--space-4);
+  margin-top: var(--space-3);
+  border-top: 1px solid var(--color-border-subtle);
+  flex-wrap: wrap;
+}
+.metaCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+}
+.metaLabel {
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: var(--font-weight-semibold);
+  font-size: 10px;
+}
+.metaValue {
+  color: var(--color-text-secondary);
+}

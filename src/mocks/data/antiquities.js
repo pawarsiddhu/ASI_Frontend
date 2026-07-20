@@ -928,7 +928,7 @@ const seed = [
     condition: 'Excellent',
     provenance: 'Belur vicinity',
     currentLocation: 'Government Museum, Bangalore',
-    circle: CIRCLE.BANGALORE,
+    circle: CIRCLE.GUWAHATI,
     museumName: 'Government Museum, Cubbon Park',
     sourceOfAcquisition: 'Transfer',
     acquisitionDate: '1970-11-25',
@@ -953,7 +953,7 @@ const seed = [
     condition: 'Excellent',
     provenance: 'Mysore royal treasury',
     currentLocation: 'Government Museum, Coin Gallery',
-    circle: CIRCLE.BANGALORE,
+    circle: CIRCLE.GUWAHATI,
     museumName: 'Government Museum, Cubbon Park',
     sourceOfAcquisition: 'Donation',
     acquisitionDate: '1982-04-14',
@@ -978,7 +978,7 @@ const seed = [
     condition: 'Good',
     provenance: 'Channapatna workshops',
     currentLocation: 'Government Museum, Handicrafts',
-    circle: CIRCLE.BANGALORE,
+    circle: CIRCLE.GUWAHATI,
     museumName: 'Government Museum, Cubbon Park',
     sourceOfAcquisition: 'Purchase',
     acquisitionDate: '2005-08-12',
@@ -1003,7 +1003,7 @@ const seed = [
     condition: 'Excellent',
     provenance: 'Aihole vicinity',
     currentLocation: 'Government Museum, Epigraphy',
-    circle: CIRCLE.BANGALORE,
+    circle: CIRCLE.GUWAHATI,
     museumName: 'Government Museum, Cubbon Park',
     sourceOfAcquisition: 'Excavation',
     acquisitionDate: '1969-09-05',
@@ -1028,7 +1028,7 @@ const seed = [
     condition: 'Good',
     provenance: 'Mysore Palace',
     currentLocation: 'Government Museum, Royal Collection',
-    circle: CIRCLE.BANGALORE,
+    circle: CIRCLE.GUWAHATI,
     museumName: 'Government Museum, Cubbon Park',
     sourceOfAcquisition: 'Transfer',
     acquisitionDate: '1972-01-30',
@@ -1053,7 +1053,7 @@ const seed = [
     condition: 'Fair',
     provenance: 'Bijapur area',
     currentLocation: 'Government Museum, Arms Gallery',
-    circle: CIRCLE.BANGALORE,
+    circle: CIRCLE.GUWAHATI,
     museumName: 'Government Museum, Cubbon Park',
     sourceOfAcquisition: 'Donation',
     acquisitionDate: '1988-06-25',
@@ -1080,7 +1080,7 @@ const seed = [
     condition: 'Excellent',
     provenance: 'Golconda fort',
     currentLocation: 'Salar Jung Museum',
-    circle: CIRCLE.HYDERABAD,
+    circle: CIRCLE.CHENNAI,
     museumName: 'Salar Jung Museum',
     sourceOfAcquisition: 'Donation',
     acquisitionDate: '1961-03-11',
@@ -1105,7 +1105,7 @@ const seed = [
     condition: 'Good',
     provenance: 'Sanchi, Madhya Pradesh',
     currentLocation: 'State Museum, Bhopal',
-    circle: CIRCLE.BHOPAL,
+    circle: CIRCLE.JAIPUR,
     museumName: 'State Museum, Bhopal',
     sourceOfAcquisition: 'Transfer',
     acquisitionDate: '1968-07-14',
@@ -1152,4 +1152,8 @@ export const antiquities = seed;
 // Handy lookups for the API layer.
 export function findAntiquityById(id) {
   return antiquities.find((a) => a.id === id);
+}
+
+export function findAntiquityIndex(id) {
+  return antiquities.findIndex((a) => a.id === id);
 }

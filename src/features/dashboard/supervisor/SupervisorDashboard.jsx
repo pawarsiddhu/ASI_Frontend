@@ -1,37 +1,41 @@
-import { Inbox, Users, BarChart3, FileText } from 'lucide-react';
+import { Inbox, Send, CheckCircle2, FileText } from 'lucide-react';
 import DashboardLayout from '../components/DashboardLayout';
+import { useDashboardData } from '../useDashboardData';
+import { ROLES } from '@utils/constants';
+import { STATUS } from '@features/antiquities/schema';
 
 const QUICK_ACTIONS = [
   {
-    label: 'Open Review Queue',
-    description: 'Records forwarded by your operators',
+    label: 'My Review Queue',
+    description: 'Records forwarded to Supervisor',
     icon: Inbox,
     iconColor: 'brand',
-    to: '/records/antiquities',
+    to: `/records/antiquities?status=${STATUS.SUPERVISOR_REVIEW}`,
   },
   {
-    label: 'Records Returned by Admin',
-    description: 'Second-round review with Admin notes',
+    label: 'Moved to Admin',
+    description: 'Records currently past your level',
+    icon: Send,
+    iconColor: 'info',
+    to: `/records/antiquities?status=${STATUS.ADMIN_REVIEW}`,
+  },
+  {
+    label: 'Published',
+    description: 'Anchored on the ledger',
+    icon: CheckCircle2,
+    iconColor: 'success',
+    to: `/records/antiquities?status=${STATUS.PUBLISHED}`,
+  },
+  {
+    label: 'All Records',
+    description: 'Browse everything in the system',
     icon: FileText,
     iconColor: 'accent',
-    phase: 'Day 2',
-  },
-  {
-    label: 'Team Members',
-    description: 'Your operators and their record counts',
-    icon: Users,
-    iconColor: 'info',
-    phase: 'Day 3',
-  },
-  {
-    label: 'Team Reports',
-    description: 'Per-operator status breakdown',
-    icon: BarChart3,
-    iconColor: 'success',
-    phase: 'Day 3',
+    to: '/records/antiquities',
   },
 ];
 
 export default function SupervisorDashboard() {
-  return <DashboardLayout quickActions={QUICK_ACTIONS} />;
+  const dash = useDashboardData(ROLES.SUPERVISOR);
+  return <DashboardLayout {...dash} quickActions={QUICK_ACTIONS} eyebrow="Supervisor" title="Review Queue" subtitle="Records waiting for supervisor review, plus team-wide progress." />;
 }

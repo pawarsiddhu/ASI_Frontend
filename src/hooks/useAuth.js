@@ -5,9 +5,7 @@ import {
   selectCurrentUser,
   selectCurrentRole,
   selectIsAuthenticated,
-  selectAuthStatus,
 } from '@features/auth/authSlice';
-import { useLogoutMutation } from '@features/auth/authApi';
 import { api } from '@api/api';
 import { can, canAny, canAll } from '@utils/permissions';
 
@@ -18,8 +16,7 @@ import { can, canAny, canAll } from '@utils/permissions';
  *   user: object | null,
  *   role: string | null,
  *   isAuthenticated: boolean,
- *   status: 'idle' | 'loading' | 'authenticated' | 'error',
- *   logout: () => Promise<void>,
+ *   logout: () => void,
  *   can: (permission: string) => boolean,
  *   canAny: (permissions: string[]) => boolean,
  *   canAll: (permissions: string[]) => boolean,
@@ -28,32 +25,26 @@ import { can, canAny, canAll } from '@utils/permissions';
  * @example
  *   const { user, can, logout } = useAuth();
  *   if (can('record.forward')) { ... }
+ *
+ * Logout note: the backend does not expose /auth/logout — JWTs are stateless,
+ * so clearing local state is the entire logout. The RTK Query cache is reset
+ * so a subsequent login doesn't inherit the previous user's data.
  */
 export function useAuth() {
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
   const role = useSelector(selectCurrentRole);
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const status = useSelector(selectAuthStatus);
-  const [triggerLogout] = useLogoutMutation();
 
-  const logout = useCallback(async () => {
-    // Fire-and-forget the server-side call; local logout happens regardless.
-    try {
-      await triggerLogout().unwrap();
-    } catch {
-      /* swallow — offline or 401 doesn't stop us clearing local state */
-    }
+  const logout = useCallback(() => {
     dispatch(logoutAction());
-    // Reset RTK Query cache so a fresh login doesn't inherit stale data.
     dispatch(api.util.resetApiState());
-  }, [dispatch, triggerLogout]);
+  }, [dispatch]);
 
   return {
     user,
     role,
     isAuthenticated,
-    status,
     logout,
     can: useCallback((permission) => can(role, permission), [role]),
     canAny: useCallback((perms) => canAny(role, perms), [role]),

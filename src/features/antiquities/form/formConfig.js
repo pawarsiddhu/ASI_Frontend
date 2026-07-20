@@ -1,9 +1,9 @@
 import {
-  CATEGORY_OPTIONS,
   CIRCLE_OPTIONS,
   MATERIAL,
   CONDITION,
   PERIOD,
+  CATEGORY_OPTIONS,
   CULTURAL_AFFILIATION,
   ACQUISITION_SOURCE,
 } from '../schema';
@@ -13,212 +13,268 @@ const toOpts = (arr) => arr.map((v) => ({ value: v, label: v }));
 /**
  * Antiquity form config.
  *
- * Each section has:
- *   { id, title, description?, fields: Field[] }
+ * Field names match the backend Record shape from POST /records verbatim so
+ * form state can be serialised straight into the multipart body — no mapping
+ * layer between the form and the wire.
  *
- * Each field has at minimum:
- *   { name, type, label, required?, helperText?, placeholder?, fullWidth?, options? }
- *
- * The `name` becomes the key in form state. This config is the ONLY thing
- * you edit to add/remove/reorder form fields. FormField.jsx dispatches on
- * `type`; add a new type by adding a case there.
+ * Extended fields (category, cultural_affiliation, weight, museum, source, etc.)
+ * are NOT in the backend schema for POC. They're gated behind
+ * SHOW_EXTENDED_FIELDS below so the config isn't lost — flip the flag to true
+ * once the backend expands.
  */
-export const antiquityFormConfig = {
-  sections: [
-    {
-      id: 'identification',
-      title: 'Identification',
-      description: 'Core identifiers and classification',
-      fields: [
-        {
-          name: 'name',
-          type: 'text',
-          label: 'Name / Title',
-          required: true,
-          placeholder: 'e.g. Chola Bronze Nataraja',
-          fullWidth: true,
-          maxLength: 200,
-        },
-        {
-          name: 'accessionNo',
-          type: 'text',
-          label: 'Accession Number',
-          required: true,
-          placeholder: 'e.g. NMMA/2024/DEL/A-4521',
-          helperText: 'Format: NMMA/YYYY/<CIRCLE>/<CODE>',
-        },
-        {
-          name: 'category',
-          type: 'select',
-          label: 'Category',
-          required: true,
-          options: CATEGORY_OPTIONS,
-        },
-        {
-          name: 'subCategory',
-          type: 'text',
-          label: 'Sub-category',
-          placeholder: 'Optional — more specific type',
-        },
-      ],
-    },
 
-    {
-      id: 'physical',
-      title: 'Physical Description',
-      description: 'Material, condition, and measurements',
-      fields: [
-        {
-          name: 'material',
-          type: 'select',
-          label: 'Primary Material',
-          required: true,
-          options: toOpts(MATERIAL),
-        },
-        {
-          name: 'condition',
-          type: 'select',
-          label: 'Condition',
-          required: true,
-          options: toOpts(CONDITION),
-        },
-        {
-          name: 'height',
-          type: 'number',
-          label: 'Height (cm)',
-          min: 0,
-          step: 0.1,
-          placeholder: '0.0',
-        },
-        {
-          name: 'width',
-          type: 'number',
-          label: 'Width (cm)',
-          min: 0,
-          step: 0.1,
-          placeholder: '0.0',
-        },
-        {
-          name: 'depth',
-          type: 'number',
-          label: 'Depth (cm)',
-          min: 0,
-          step: 0.1,
-          placeholder: '0.0',
-        },
-        {
-          name: 'weight',
-          type: 'number',
-          label: 'Weight (g)',
-          min: 0,
-          step: 0.01,
-          placeholder: '0.0',
-        },
-      ],
-    },
+/**
+ * Master toggle for extended fields. Keep FALSE for POC.
+ *   false → backend-compliant field set only
+ *   true  → all fields visible; the extended ones will NOT be sent on the
+ *           wire until antiquitiesApi.createAntiquity knows how to serialise
+ *           them (currently, only backend-supported keys are appended)
+ */
+export const SHOW_EXTENDED_FIELDS = false;
 
-    {
-      id: 'historical',
-      title: 'Historical Context',
-      description: 'Period, cultural context, and provenance',
-      fields: [
-        {
-          name: 'period',
-          type: 'select',
-          label: 'Period / Dynasty',
-          required: true,
-          options: toOpts(PERIOD),
-        },
-        {
-          name: 'culturalAffiliation',
-          type: 'select',
-          label: 'Cultural Affiliation',
-          required: true,
-          options: toOpts(CULTURAL_AFFILIATION),
-        },
-        {
-          name: 'provenance',
-          type: 'textarea',
-          label: 'Provenance',
-          rows: 3,
-          fullWidth: true,
-          placeholder: 'Origin / find-spot / previous ownership history',
-        },
-      ],
-    },
+// --------- Backend-compliant sections (always visible) ---------
 
+const identificationSection = {
+  id: 'identification',
+  title: 'Identification',
+  description: 'Title and secondary references. Key number is auto-generated on save.',
+  fields: [
     {
-      id: 'custody',
-      title: 'Custody & Acquisition',
-      description: 'Circle, museum, and how the object was acquired',
-      fields: [
-        {
-          name: 'circle',
-          type: 'select',
-          label: 'ASI Circle',
-          required: true,
-          options: CIRCLE_OPTIONS,
-        },
-        {
-          name: 'museumName',
-          type: 'text',
-          label: 'Current Museum',
-          placeholder: 'e.g. National Museum, New Delhi',
-        },
-        {
-          name: 'currentLocation',
-          type: 'text',
-          label: 'Current Location within Museum',
-          placeholder: 'Gallery / section',
-          fullWidth: true,
-        },
-        {
-          name: 'sourceOfAcquisition',
-          type: 'select',
-          label: 'Source of Acquisition',
-          options: toOpts(ACQUISITION_SOURCE),
-        },
-        {
-          name: 'acquisitionDate',
-          type: 'date',
-          label: 'Acquisition Date',
-        },
-      ],
+      name: 'title',
+      type: 'text',
+      label: 'Title',
+      required: true,
+      placeholder: 'e.g. Chola Bronze Nataraja',
+      fullWidth: true,
+      maxLength: 200,
     },
-
     {
-      id: 'documentation',
-      title: 'Documentation Notes',
-      description: 'Identification marks, general remarks',
-      fields: [
-        {
-          name: 'identificationMarks',
-          type: 'textarea',
-          label: 'Identification Marks',
-          rows: 3,
-          fullWidth: true,
-          placeholder: 'Inscriptions, signatures, distinguishing features',
-        },
-        {
-          name: 'remarks',
-          type: 'textarea',
-          label: 'General Remarks',
-          rows: 4,
-          fullWidth: true,
-          placeholder: 'Any additional notes, conservation observations, references',
-        },
-      ],
+      name: 'accession_number',
+      type: 'text',
+      label: 'Accession Number',
+      placeholder: 'Optional secondary reference',
+      helperText: 'Museum accession reference. Optional; not required to be unique.',
     },
   ],
 };
 
+const physicalSection = {
+  id: 'physical',
+  title: 'Physical Description',
+  description: 'Material, condition, and measurements',
+  fields: [
+    {
+      name: 'material',
+      type: 'select',
+      label: 'Primary Material',
+      options: toOpts(MATERIAL),
+      placeholder: 'Select material',
+    },
+    {
+      name: 'condition',
+      type: 'select',
+      label: 'Condition',
+      options: toOpts(CONDITION),
+      placeholder: 'Select condition',
+    },
+    {
+      name: 'dimensions',
+      type: 'text',
+      label: 'Dimensions',
+      placeholder: 'e.g. 12 × 8 × 3 cm',
+      helperText: 'Height × width × depth, with unit.',
+      fullWidth: true,
+    },
+  ],
+};
+
+const historicalSection = {
+  id: 'historical',
+  title: 'Historical Context',
+  description: 'Period and provenance',
+  fields: [
+    {
+      name: 'period',
+      type: 'select',
+      label: 'Period / Dynasty',
+      options: toOpts(PERIOD),
+      placeholder: 'Select period',
+    },
+    {
+      name: 'provenance',
+      type: 'textarea',
+      label: 'Provenance',
+      rows: 3,
+      fullWidth: true,
+      placeholder: 'Origin / find-spot / previous ownership history',
+    },
+  ],
+};
+
+const custodySection = {
+  id: 'custody',
+  title: 'Custody',
+  description: 'ASI Circle responsible for the record',
+  fields: [
+    {
+      name: 'circle',
+      type: 'select',
+      label: 'ASI Circle',
+      required: true,
+      options: CIRCLE_OPTIONS,
+      placeholder: 'Select circle',
+    },
+  ],
+};
+
+// --------- Extended (gated) sections — not in POC backend ---------
+
+const extendedIdentification = {
+  id: 'extended-identification',
+  title: 'Category (extended)',
+  description: 'Not sent to backend in POC.',
+  fields: [
+    {
+      name: 'category',
+      type: 'select',
+      label: 'Category',
+      options: CATEGORY_OPTIONS,
+    },
+    { name: 'subCategory', type: 'text', label: 'Sub-category' },
+  ],
+};
+
+const extendedPhysical = {
+  id: 'extended-physical',
+  title: 'Weight (extended)',
+  description: 'Not sent to backend in POC.',
+  fields: [
+    {
+      name: 'weight',
+      type: 'number',
+      label: 'Weight (g)',
+      min: 0,
+      step: 0.01,
+      placeholder: '0.0',
+    },
+  ],
+};
+
+const extendedHistorical = {
+  id: 'extended-historical',
+  title: 'Cultural Affiliation (extended)',
+  description: 'Not sent to backend in POC.',
+  fields: [
+    {
+      name: 'culturalAffiliation',
+      type: 'select',
+      label: 'Cultural Affiliation',
+      options: toOpts(CULTURAL_AFFILIATION),
+    },
+  ],
+};
+
+const extendedCustody = {
+  id: 'extended-custody',
+  title: 'Museum & Acquisition (extended)',
+  description: 'Not sent to backend in POC.',
+  fields: [
+    { name: 'museumName', type: 'text', label: 'Current Museum' },
+    { name: 'currentLocation', type: 'text', label: 'Location within Museum', fullWidth: true },
+    {
+      name: 'sourceOfAcquisition',
+      type: 'select',
+      label: 'Source of Acquisition',
+      options: toOpts(ACQUISITION_SOURCE),
+    },
+    { name: 'acquisitionDate', type: 'date', label: 'Acquisition Date' },
+  ],
+};
+
+const extendedDocumentation = {
+  id: 'extended-documentation',
+  title: 'Documentation Notes (extended)',
+  description: 'Not sent to backend in POC.',
+  fields: [
+    {
+      name: 'identificationMarks',
+      type: 'textarea',
+      label: 'Identification Marks',
+      rows: 3,
+      fullWidth: true,
+    },
+    {
+      name: 'remarks',
+      type: 'textarea',
+      label: 'General Remarks',
+      rows: 4,
+      fullWidth: true,
+    },
+  ],
+};
+
+// --------- Assembled config ---------
+
+const baseSections = [
+  identificationSection,
+  physicalSection,
+  historicalSection,
+  custodySection,
+];
+
+const extendedSections = SHOW_EXTENDED_FIELDS
+  ? [
+      extendedIdentification,
+      extendedPhysical,
+      extendedHistorical,
+      extendedCustody,
+      extendedDocumentation,
+    ]
+  : [];
+
+export const antiquityFormConfig = {
+  sections: [...baseSections, ...extendedSections],
+};
+
 /**
- * Default empty values for the form. Number/date fields default to '' so
- * they render as truly empty inputs (React controlled-input semantics).
+ * Field names the backend actually accepts on POST /records for ANTIQUITY,
+ * in canonical wire order. `image` is appended separately (last) by the
+ * mutation — it's the file, not a form-state key. Multipart field ORDER
+ * matters: the upload middleware reads `type` before `image` to choose the
+ * destination subfolder.
+ */
+export const BACKEND_FIELDS = [
+  'type',            // discriminator, prepended by the mutation
+  'title',
+  'circle',
+  'key_no',
+  'accession_number',
+  'material',
+  'dimensions',
+  'provenance',
+  'period',
+  'condition',
+  // then 'image' is appended LAST by the mutation
+];
+
+/**
+ * Default empty values for the form. Includes every possible field (both
+ * base and extended) so React's controlled-input semantics stay intact even
+ * if a field is temporarily hidden by the flag.
  */
 export function getInitialFormValues() {
   const values = {};
-  antiquityFormConfig.sections.forEach((s) => {
+  [
+    identificationSection,
+    physicalSection,
+    historicalSection,
+    custodySection,
+    extendedIdentification,
+    extendedPhysical,
+    extendedHistorical,
+    extendedCustody,
+    extendedDocumentation,
+  ].forEach((s) => {
     s.fields.forEach((f) => {
       values[f.name] = '';
     });
@@ -227,7 +283,8 @@ export function getInitialFormValues() {
 }
 
 /**
- * Flat list of all field configs — handy for validation loops.
+ * Flat list of currently visible field configs — used by validation so we
+ * don't flag required errors on fields that are gated off.
  */
 export function getAllFields() {
   return antiquityFormConfig.sections.flatMap((s) => s.fields);

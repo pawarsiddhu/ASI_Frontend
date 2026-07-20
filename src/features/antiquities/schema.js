@@ -8,14 +8,20 @@
  */
 
 // ---------- Workflow status ----------
+// String values match the backend enum verbatim.
+// JS keys are kept as-is for now to avoid a wide rename; a full Phase 5 sweep
+// will align keys with backend names too.
+//   STATUS.SUPERVISOR_REVIEW → 'PENDING_SUPERVISOR'
+//   STATUS.ADMIN_REVIEW      → 'PENDING_ADMIN'
+//   STATUS.PUBLISH_QUEUE     → 'PENDING_SUPERADMIN'
 export const STATUS = {
-  DRAFT: 'draft',
-  SUPERVISOR_REVIEW: 'supervisor_review',
-  ADMIN_REVIEW: 'admin_review',
-  PUBLISH_QUEUE: 'publish_queue',
-  PUBLISHED: 'published',
-  RETURNED: 'returned',
-  REJECTED: 'rejected',
+  DRAFT: 'DRAFT',
+  SUPERVISOR_REVIEW: 'PENDING_SUPERVISOR',
+  ADMIN_REVIEW: 'PENDING_ADMIN',
+  PUBLISH_QUEUE: 'PENDING_SUPERADMIN',
+  PUBLISHED: 'PUBLISHED',
+  RETURNED: 'RETURNED',
+  REJECTED: 'REJECTED',
 };
 
 export const STATUS_LABEL = {
@@ -128,16 +134,22 @@ export const ACQUISITION_SOURCE = [
 
 // ---------- ASI Circles ----------
 // (Real list has 29 — we use a working subset for the mock)
+// `state` is used for state-wise reporting aggregation.
+// `id` matches the backend circle enum verbatim — sent on the wire as-is.
 export const CIRCLE = {
-  DELHI: { id: 'CIR-DEL', name: 'Delhi Circle' },
-  MUMBAI: { id: 'CIR-MUM', name: 'Mumbai Circle' },
-  CHENNAI: { id: 'CIR-CHE', name: 'Chennai Circle' },
-  KOLKATA: { id: 'CIR-KOL', name: 'Kolkata Circle' },
-  BANGALORE: { id: 'CIR-BAN', name: 'Bangalore Circle' },
-  HYDERABAD: { id: 'CIR-HYD', name: 'Hyderabad Circle' },
-  BHOPAL: { id: 'CIR-BPL', name: 'Bhopal Circle' },
-  JAIPUR: { id: 'CIR-JPR', name: 'Jaipur Circle' },
+  DELHI:    { id: 'DELHI',    name: 'Delhi Circle',    state: 'Delhi' },
+  MUMBAI:   { id: 'MUMBAI',   name: 'Mumbai Circle',   state: 'Maharashtra' },
+  CHENNAI:  { id: 'CHENNAI',  name: 'Chennai Circle',  state: 'Tamil Nadu' },
+  KOLKATA:  { id: 'KOLKATA',  name: 'Kolkata Circle',  state: 'West Bengal' },
+  JAIPUR:   { id: 'JAIPUR',   name: 'Jaipur Circle',   state: 'Rajasthan' },
+  GUWAHATI: { id: 'GUWAHATI', name: 'Guwahati Circle', state: 'Assam' },
 };
+
+// circleId → state — handy for aggregations
+export const CIRCLE_TO_STATE = Object.values(CIRCLE).reduce((acc, c) => {
+  acc[c.id] = c.state;
+  return acc;
+}, {});
 
 export const CIRCLES = Object.values(CIRCLE);
 

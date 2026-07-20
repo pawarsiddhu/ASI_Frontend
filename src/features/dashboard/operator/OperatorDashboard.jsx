@@ -1,40 +1,49 @@
-import { Plus, FileText, Landmark, MapPinned } from 'lucide-react';
+import { Plus, Inbox, RotateCcw, Landmark } from 'lucide-react';
 import DashboardLayout from '../components/DashboardLayout';
+import { useDashboardData } from '../useDashboardData';
+import { ROLES } from '@utils/constants';
+import { STATUS } from '@features/antiquities/schema';
 
 /**
- * OperatorDashboard — the Operator's home. Real dashboard as of Phase 5.
+ * OperatorDashboard.
+ *
+ * Backend scopes /records to the operator's own records, so every count
+ * here is "mine, not the team's". Quick actions link to the list page
+ * with pre-applied status filters so a click lands the user in exactly
+ * the queue they were counting on the card.
  */
 const QUICK_ACTIONS = [
   {
     label: 'New Antiquity Record',
-    description: 'Movable objects — sculpture, coin, manuscript',
+    description: 'Movable object — sculpture, coin, manuscript',
     icon: Plus,
     iconColor: 'brand',
     to: '/records/antiquities/new',
   },
   {
     label: 'New Built Heritage Record',
-    description: 'Immovable structures — temple, fort, stepwell',
+    description: 'Immovable site — temple, fort, stepwell, cave',
     icon: Landmark,
     iconColor: 'accent',
-    phase: 'Day 4',
+    to: '/records/bhs/new',
   },
   {
-    label: 'New Archaeological Site',
-    description: 'Excavation sites and heritage landscapes',
-    icon: MapPinned,
+    label: 'Returned to Me (Antiquities)',
+    description: 'Records that need correction and resubmission',
+    icon: RotateCcw,
+    iconColor: 'warning',
+    to: `/records/antiquities?status=${STATUS.RETURNED}`,
+  },
+  {
+    label: 'All My Records',
+    description: 'Browse all antiquities you have created',
+    icon: Inbox,
     iconColor: 'info',
-    phase: 'Day 4',
-  },
-  {
-    label: 'My Recent Records',
-    description: 'View, edit, and forward your drafts',
-    icon: FileText,
-    iconColor: 'success',
     to: '/records/antiquities',
   },
 ];
 
 export default function OperatorDashboard() {
-  return <DashboardLayout quickActions={QUICK_ACTIONS} />;
+  const dash = useDashboardData(ROLES.OPERATOR);
+  return <DashboardLayout {...dash} quickActions={QUICK_ACTIONS} eyebrow="Operator" title="Overview" subtitle="Records you have created and their current status in the workflow." />;
 }

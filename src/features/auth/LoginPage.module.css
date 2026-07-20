@@ -20,16 +20,29 @@
   overflow: hidden;
 }
 
-/* Decorative subtle grid pattern */
-.brandPanel::before {
-  content: '';
+/* Heritage-motif watermark — anchored to top-right, rotated slightly for
+   asymmetric feel. Below the brand content so text sits on top. */
+.motif {
   position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+  top: -140px;
+  right: -140px;
+  color: var(--color-accent);
   pointer-events: none;
+  transform: rotate(15deg);
+}
+
+/* Monument skyline anchored to the bottom edge. Silhouette sits behind
+   nothing (content is centered vertically) so no z-index war needed. */
+.skyline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  color: var(--color-accent);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .brandInner {

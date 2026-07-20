@@ -1,37 +1,41 @@
-import { CheckCircle2, ShieldCheck, Users, BarChart3 } from 'lucide-react';
+import { Inbox, CheckCircle2, XCircle, FileText } from 'lucide-react';
 import DashboardLayout from '../components/DashboardLayout';
+import { useDashboardData } from '../useDashboardData';
+import { ROLES } from '@utils/constants';
+import { STATUS } from '@features/antiquities/schema';
 
 const QUICK_ACTIONS = [
   {
-    label: 'Publish Queue',
-    description: 'Records ready for public release',
-    icon: CheckCircle2,
+    label: 'My Review Queue',
+    description: 'Records ready to anchor on ledger',
+    icon: Inbox,
     iconColor: 'brand',
-    to: '/records/antiquities',
+    to: `/records/antiquities?status=${STATUS.PUBLISH_QUEUE}`,
   },
   {
-    label: 'User Approvals',
-    description: 'Pending supervisor and scholar registrations',
-    icon: ShieldCheck,
-    iconColor: 'accent',
-    phase: 'Later',
-  },
-  {
-    label: 'Portal Users',
-    description: 'All operators, supervisors, admins',
-    icon: Users,
-    iconColor: 'info',
-    phase: 'Later',
-  },
-  {
-    label: 'Master Reports',
-    description: 'By Museum, Circle, Archaeological Site',
-    icon: BarChart3,
+    label: 'Published Records',
+    description: 'Anchored on Fabric — verify integrity anytime',
+    icon: CheckCircle2,
     iconColor: 'success',
-    phase: 'Day 3',
+    to: `/records/antiquities?status=${STATUS.PUBLISHED}`,
+  },
+  {
+    label: 'Rejected',
+    description: 'Terminal records with rejection reasons',
+    icon: XCircle,
+    iconColor: 'danger',
+    to: `/records/antiquities?status=${STATUS.REJECTED}`,
+  },
+  {
+    label: 'All Records',
+    description: 'Every antiquity in the system',
+    icon: FileText,
+    iconColor: 'info',
+    to: '/records/antiquities',
   },
 ];
 
 export default function SuperAdminDashboard() {
-  return <DashboardLayout quickActions={QUICK_ACTIONS} />;
+  const dash = useDashboardData(ROLES.SUPERADMIN);
+  return <DashboardLayout {...dash} quickActions={QUICK_ACTIONS} eyebrow="Super Administrator" title="My Review Queue" subtitle="Records ready to be anchored on the ledger, plus published totals." />;
 }

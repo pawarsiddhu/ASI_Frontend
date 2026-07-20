@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Plus, Download, Printer } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Plus, Download } from 'lucide-react';
 
 import Button from '@components/Button';
 import Card from '@components/Card';
@@ -10,6 +10,7 @@ import { useToast } from '@components/Toast';
 
 import FilterBar from './components/FilterBar';
 import AntiquitiesTable from './components/AntiquitiesTable';
+import { exportItemsAsCsv } from './utils/exportCsv';
 
 import { useListAntiquitiesQuery } from './antiquitiesApi';
 import { useAuth } from '@hooks/useAuth';
@@ -23,17 +24,28 @@ import styles from './AntiquitiesListPage.module.css';
  */
 const TITLE_BY_ROLE = {
   [ROLES.OPERATOR]: 'My Antiquities',
-  [ROLES.SUPERVISOR]: 'Antiquities · Team',
+  [ROLES.SUPERVISOR]: 'All Antiquities',
   [ROLES.ADMIN]: 'All Antiquities',
   [ROLES.SUPERADMIN]: 'All Antiquities',
-  [ROLES.RD]: 'Circle Antiquities',
+  [ROLES.RD]: 'All Antiquities',
 };
 
 const DEFAULT_FILTERS = {
   search: '',
   status: '',
   circle: '',
-  category: '',
+};
+
+/**
+ * Sortable column keys map to fields on the RecordSummary shape:
+ *   title       → item.title
+ *   status      → item.status
+ *   created_at  → item.created_at
+ */
+const SORT_ACCESSORS = {
+  title: (r) => (r.title || '').toLowerCase(),
+  status: (r) => r.status || '',
+  created_at: (r) => r.created_at || '',
 };
 
 export default function AntiquitiesListPage() {
@@ -41,49 +53,88 @@ export default function AntiquitiesListPage() {
   const toast = useToast();
   const { role, can } = useAuth();
 
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
-  const [sortBy, setSortBy] = useState('updatedAt');
+  // URL params can pre-seed filter state (e.g. dashboard deep-links like
+  // /records/antiquities?status=PENDING_ADMIN). Read once on mount; after that
+  // filter state lives locally and doesn't sync back (keeps the URL clean
+  // during ad-hoc filtering).
+  const [searchParams] = useSearchParams();
+  const initialFilters = useMemo(
+    () => ({
+      search: searchParams.get('search') || '',
+      status: searchParams.get('status') || '',
+      circle: searchParams.get('circle') || '',
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const [filters, setFilters] = useState(initialFilters);
+  const [sortBy, setSortBy] = useState('created_at');
   const [sortOrder, setSortOrder] = useState('desc');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
-  // Debounce the search so we don't refetch on every keystroke.
-  // Other filters aren't debounced because dropdown changes are discrete.
   const debouncedSearch = useDebounce(filters.search, 300);
 
-  // Whenever the effective query changes, reset to page 1.
-  // useMemo builds the query object so we don't send undefined params.
+  // Server-side params: ONLY the three the backend accepts on GET /records.
+  // The `type: 'ANTIQUITY'` discriminator is added by antiquitiesApi.
   const queryParams = useMemo(() => {
-    const params = {
-      page,
-      pageSize,
-      sortBy,
-      sortOrder,
-    };
-    if (debouncedSearch) params.search = debouncedSearch;
+    const params = {};
     if (filters.status) params.status = filters.status;
     if (filters.circle) params.circle = filters.circle;
-    if (filters.category) params.category = filters.category;
     return params;
-  }, [
-    page,
-    pageSize,
-    sortBy,
-    sortOrder,
-    debouncedSearch,
-    filters.status,
-    filters.circle,
-    filters.category,
-  ]);
+  }, [filters.status, filters.circle]);
 
-  const { data, isLoading, isFetching, isError, refetch } =
-    useListAntiquitiesQuery(queryParams);
+  const {
+    data: allItems,
+    isLoading,
+    isFetching,
+    isError,
+    refetch,
+  } = useListAntiquitiesQuery(queryParams);
+
+  // Client-side search + sort + paginate. useMemo so we don't rework this on
+  // every render — only when the raw list, filters, or sort changes.
+  const searched = useMemo(() => {
+    const items = allItems || [];
+    if (!debouncedSearch) return items;
+    const q = debouncedSearch.trim().toLowerCase();
+    return items.filter((r) => {
+      const t = (r.title || '').toLowerCase();
+      const id = String(r.id);
+      return t.includes(q) || id.includes(q);
+    });
+  }, [allItems, debouncedSearch]);
+
+  const sorted = useMemo(() => {
+    const accessor = SORT_ACCESSORS[sortBy] || SORT_ACCESSORS.created_at;
+    // Copy first — Array.sort mutates, and RTK Query results are frozen.
+    const copy = [...searched];
+    copy.sort((a, b) => {
+      const av = accessor(a);
+      const bv = accessor(b);
+      if (av < bv) return sortOrder === 'asc' ? -1 : 1;
+      if (av > bv) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return copy;
+  }, [searched, sortBy, sortOrder]);
+
+  const total = sorted.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  // Clamp page in case a filter change shrinks the result set below the
+  // current page number.
+  const safePage = Math.min(page, totalPages);
+  const visibleItems = useMemo(() => {
+    const start = (safePage - 1) * pageSize;
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, safePage, pageSize]);
 
   // Handlers ---------------------------------------------------------------
 
   const patchFilters = (patch) => {
     setFilters((prev) => ({ ...prev, ...patch }));
-    setPage(1); // reset to page 1 whenever any filter changes
+    setPage(1);
   };
 
   const resetFilters = () => {
@@ -102,9 +153,7 @@ export default function AntiquitiesListPage() {
   };
 
   const handleRowClick = (item) => {
-    // Detail page is Phase 3 of Day 2 — for now the toast confirms routing works.
-    toast.info(`Detail view for ${item.accessionNo} — coming in Day 2 Phase 3`);
-    // navigate(`/records/antiquities/${item.id}`);
+    navigate(`/records/antiquities/${item.id}`);
   };
 
   const handleCreate = () => {
@@ -112,16 +161,26 @@ export default function AntiquitiesListPage() {
   };
 
   const handleExport = () => {
-    toast.info('Export — coming in Day 4');
+    if (!sorted.length) {
+      toast.warning('Nothing to export.');
+      return;
+    }
+    // Export the entire filtered+sorted set, not just the current page —
+    // users almost always want "download what I'm looking at as a filter",
+    // not "download this page of 25".
+    exportItemsAsCsv(sorted, { scope: 'antiquities' });
+    toast.success(
+      `Exported ${sorted.length} record${sorted.length === 1 ? '' : 's'} as CSV.`
+    );
   };
 
-  const handlePrint = () => {
-    toast.info('Print view — coming in Day 4');
-  };
+  // Operator sees only their own records (server-enforced), so the Circle
+  // filter is meaningless for them.
+  const canFilterByCircle = role !== ROLES.OPERATOR;
 
-  // The Circle filter is redundant for users who only see their own circle.
-  const canFilterByCircle =
-    role === ROLES.ADMIN || role === ROLES.SUPERADMIN;
+  const filtersActive = Boolean(
+    filters.search || filters.status || filters.circle
+  );
 
   return (
     <div className={styles.wrapper}>
@@ -129,11 +188,11 @@ export default function AntiquitiesListPage() {
         <div>
           <h1 className={styles.title}>{TITLE_BY_ROLE[role] || 'Antiquities'}</h1>
           <p className={styles.subtitle}>
-            {data?.total !== undefined && !isLoading ? (
+            {!isLoading ? (
               <>
-                <strong>{data.total.toLocaleString('en-IN')}</strong>{' '}
-                {data.total === 1 ? 'record' : 'records'}
-                {filters.search || filters.status || filters.circle || filters.category ? (
+                <strong>{total.toLocaleString('en-IN')}</strong>{' '}
+                {total === 1 ? 'record' : 'records'}
+                {filtersActive ? (
                   <Badge size="sm" variant="primary">
                     filtered
                   </Badge>
@@ -149,18 +208,11 @@ export default function AntiquitiesListPage() {
           <Button
             variant="secondary"
             size="sm"
-            leftIcon={<Printer size={12} />}
-            onClick={handlePrint}
-          >
-            Print
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
             leftIcon={<Download size={12} />}
             onClick={handleExport}
+            disabled={!sorted.length}
           >
-            Export
+            Export CSV
           </Button>
           {can('record.create') && (
             <Button
@@ -191,7 +243,7 @@ export default function AntiquitiesListPage() {
           </div>
         ) : (
           <AntiquitiesTable
-            items={data?.items || []}
+            items={visibleItems}
             isLoading={isLoading}
             isFetching={isFetching}
             sortBy={sortBy}
@@ -202,12 +254,15 @@ export default function AntiquitiesListPage() {
         )}
 
         <Pagination
-          page={data?.page || 1}
-          totalPages={data?.totalPages || 1}
+          page={safePage}
+          totalPages={totalPages}
           pageSize={pageSize}
-          total={data?.total || 0}
+          total={total}
           onPageChange={setPage}
-          onPageSizeChange={setPageSize}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setPage(1);
+          }}
         />
       </Card>
     </div>

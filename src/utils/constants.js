@@ -1,13 +1,17 @@
 /**
  * Roles — the 5 personas defined in the SoW.
  * Any code that checks role/permissions should import from here.
+ *
+ * String values match the backend enum verbatim (UPPERCASE).
+ * The JS key `RD` is kept short for ergonomics; its value is
+ * `'REGIONAL_DIRECTOR'` to match the API.
  */
 export const ROLES = {
-  OPERATOR: 'operator',
-  SUPERVISOR: 'supervisor',
-  ADMIN: 'admin',
-  SUPERADMIN: 'superadmin',
-  RD: 'rd',
+  OPERATOR: 'OPERATOR',
+  SUPERVISOR: 'SUPERVISOR',
+  ADMIN: 'ADMIN',
+  SUPERADMIN: 'SUPERADMIN',
+  RD: 'REGIONAL_DIRECTOR',
 };
 
 /**
@@ -45,12 +49,31 @@ export const ROLE_BADGE_VARIANT = {
 };
 
 /**
- * localStorage key for the JWT. Kept as a constant so nothing else has to
- * remember the string.
+ * localStorage key for the persisted auth blob.
+ *
+ * The value stored at this key is a JSON string of shape:
+ *   { token: string, user: { id, username, role, ... } }
+ *
+ * Both are stored together (rather than token-only) because the real backend
+ * has no `/auth/me` endpoint — on page refresh we rehydrate the user from
+ * localStorage synchronously instead of re-fetching from the server.
+ * See `src/features/auth/authStorage.js` for the read/write helpers.
  */
-export const AUTH_TOKEN_KEY = 'asi_auth_token';
+export const AUTH_STORAGE_KEY = 'asi_auth';
 
 /**
- * API base URL. In production this changes; MSW intercepts either way.
+ * API base URL. Sourced from `VITE_API_BASE_URL` in .env.development
+ * (or the environment the app is built in). Fallback keeps the app from
+ * exploding if the var is missing — the requests will just fail loudly.
+ *
+ * When `VITE_USE_MOCKS=true` (see main.jsx), MSW intercepts these requests
+ * in the browser before they reach the network, so the URL doesn't matter.
  */
-export const API_BASE_URL = '/api';
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
+/**
+ * Whether MSW should be started on boot. String comparison because Vite
+ * env vars come through as strings.
+ */
+export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true';

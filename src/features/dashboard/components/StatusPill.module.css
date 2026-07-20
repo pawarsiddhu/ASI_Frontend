@@ -1,0 +1,37 @@
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.pill[data-tone='neutral'] {
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+}
+
+.pill[data-tone='brand'] {
+  background: var(--color-brand-soft);
+  color: var(--color-brand-active);
+}
+
+.pill[data-tone='success'] {
+  background: var(--color-success-soft);
+  color: var(--color-success-hover);
+}
+
+.pill[data-tone='warning'] {
+  background: var(--color-warning-soft);
+  color: var(--color-warning-hover);
+}
+
+.pill[data-tone='danger'] {
+  background: var(--color-danger-soft);
+  color: var(--color-danger-hover);
+}

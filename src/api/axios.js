@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { API_BASE_URL, AUTH_TOKEN_KEY } from '@utils/constants';
+import { API_BASE_URL } from '@utils/constants';
+import { readAuthToken } from '@features/auth/authStorage';
 
 /**
  * Axios instance with:
@@ -14,8 +15,12 @@ import { API_BASE_URL, AUTH_TOKEN_KEY } from '@utils/constants';
 const instance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
+  // Content-Type is deliberately NOT set as a default. Axios sets it per
+  // request based on the body type:
+  //   - plain object → 'application/json'
+  //   - FormData     → 'multipart/form-data; boundary=...' (browser sets it)
+  // Hard-coding a default JSON header would break multipart uploads.
   headers: {
-    'Content-Type': 'application/json',
     Accept: 'application/json',
   },
 });
@@ -31,7 +36,7 @@ export function setUnauthorizedHandler(handler) {
 }
 
 instance.interceptors.request.use((config) => {
-  const token = localStorage.getItem(AUTH_TOKEN_KEY);
+  const token = readAuthToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

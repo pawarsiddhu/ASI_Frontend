@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, LogOut, User as UserIcon } from 'lucide-react';
+import { ChevronDown, LogOut } from 'lucide-react';
 import Badge from '@components/Badge';
 import { useAuth } from '@hooks/useAuth';
 import { useClickOutside } from '@hooks/useClickOutside';
@@ -17,7 +17,13 @@ export default function UserMenu() {
 
   if (!user) return null;
 
-  const initials = user.name
+  // The real backend user shape is { id, username, role } — no `name`, no
+  // `email`, no `circle`. Mock users still carry those, so we fall back
+  // gracefully. `displayName` is the one source of truth for anything the
+  // header shows as a "who you are" string.
+  const displayName = user.name || user.username || 'User';
+
+  const initials = displayName
     .split(' ')
     .filter(Boolean)
     .slice(0, 2)
@@ -38,7 +44,7 @@ export default function UserMenu() {
           {initials}
         </span>
         <span className={styles.triggerText}>
-          <span className={styles.name}>{user.name}</span>
+          <span className={styles.name}>{displayName}</span>
           <span className={styles.roleText}>{ROLE_LABELS[role]}</span>
         </span>
         <ChevronDown
@@ -54,8 +60,10 @@ export default function UserMenu() {
               {initials}
             </div>
             <div className={styles.headerText}>
-              <div className={styles.headerName}>{user.name}</div>
-              <div className={styles.headerEmail}>{user.email}</div>
+              <div className={styles.headerName}>{displayName}</div>
+              <div className={styles.headerEmail}>
+                {user.email || user.username}
+              </div>
               <div className={styles.headerBadge}>
                 <Badge size="sm" variant={ROLE_BADGE_VARIANT[role]}>
                   {ROLE_LABELS[role]}
@@ -66,20 +74,6 @@ export default function UserMenu() {
               </div>
             </div>
           </div>
-
-          <div className={styles.divider} />
-
-          <button
-            type="button"
-            className={styles.item}
-            role="menuitem"
-            disabled
-            title="Coming soon"
-          >
-            <UserIcon size={14} />
-            <span>My profile</span>
-            <span className={styles.itemBadge}>Soon</span>
-          </button>
 
           <div className={styles.divider} />
 

@@ -2,35 +2,37 @@ import { ROLES } from '@utils/constants';
 
 /**
  * Five hardcoded mock users — one per role.
- * Password for all: `password`
+ * Password for all: `password123`
  *
  * Real backend will replace this file. Nothing else depends on this shape
  * except the MSW handlers.
+ *
+ * Note: Backend `users` table has a `username` column, not `email`.
  */
 export const users = [
   {
     id: 'u-001',
-    email: 'operator@nmma',
+    username: 'operator1',
     name: 'Ravi Kumar',
     role: ROLES.OPERATOR,
     circle: 'Delhi Circle',
-    circleId: 'CIR-DEL',
+    circleId: 'DELHI',
     department: 'Documentation Unit',
     joinedAt: '2023-04-11',
   },
   {
     id: 'u-002',
-    email: 'supervisor@nmma',
+    username: 'supervisor1',
     name: 'Priya Sharma',
     role: ROLES.SUPERVISOR,
     circle: 'Delhi Circle',
-    circleId: 'CIR-DEL',
+    circleId: 'DELHI',
     department: 'Documentation Unit',
     joinedAt: '2022-01-20',
   },
   {
     id: 'u-003',
-    email: 'admin@nmma',
+    username: 'admin1',
     name: 'Rajesh Iyer',
     role: ROLES.ADMIN,
     circle: null,
@@ -40,7 +42,7 @@ export const users = [
   },
   {
     id: 'u-004',
-    email: 'superadmin@nmma',
+    username: 'superadmin1',
     name: 'Dr. Meera Nair',
     role: ROLES.SUPERADMIN,
     circle: null,
@@ -50,21 +52,21 @@ export const users = [
   },
   {
     id: 'u-005',
-    email: 'rd@nmma',
+    username: 'director1',
     name: 'Vikram Singh',
     role: ROLES.RD,
     circle: 'Delhi Circle',
-    circleId: 'CIR-DEL',
+    circleId: 'DELHI',
     department: 'Regional Directorate',
     joinedAt: '2020-11-02',
   },
 ];
 
 /**
- * Find a user by email — used by the mock login handler.
+ * Find a user by username — used by the mock login handler.
  */
-export function findByEmail(email) {
-  return users.find((u) => u.email === email);
+export function findByUsername(username) {
+  return users.find((u) => u.username === username);
 }
 
 /**

@@ -1,0 +1,196 @@
+.card {
+  position: relative;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  overflow: hidden;
+}
+
+/* The gold accent bar across the top — the visual signal that this card
+   carries the record's trust relationship, not just chrome. */
+.accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-hover));
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.headIcon {
+  color: #8A7530;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* -------- Tx row -------- */
+
+.txLabel {
+  font-size: 11.5px;
+  color: var(--color-text-secondary);
+  margin: var(--space-2) 0 4px;
+}
+
+.txRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  background: var(--color-bg-page);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  width: 100%;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  font: inherit;
+  color: inherit;
+  margin-bottom: var(--space-3);
+}
+.txRow:hover { background: var(--color-bg-muted); }
+
+.txValue {
+  font-family: var(--font-family-mono);
+  font-size: 11.5px;
+  color: var(--color-text-primary);
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  background: transparent;
+  padding: 0;
+}
+.txCopyIcon { color: var(--color-text-muted); flex-shrink: 0; }
+.txCopiedIcon { color: var(--color-success); flex-shrink: 0; }
+
+.anchoredRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: 11.5px;
+  margin-bottom: var(--space-3);
+}
+.metaLabel { color: var(--color-text-muted); }
+.metaValue { color: var(--color-text-secondary); }
+
+/* -------- Verify -------- */
+
+.verifyBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  background: var(--color-bg-surface);
+  color: var(--color-brand);
+  border: 1px solid var(--color-brand-border);
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.verifyBtn:hover { background: var(--color-brand-soft); }
+
+.verifyLoading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px 12px;
+  color: var(--color-text-secondary);
+  font-size: 12.5px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* -------- Result block -------- */
+
+.result {
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  border: 1px solid;
+}
+.result[data-tone='ok']   { background: var(--color-success-soft); border-color: var(--color-success-border); }
+.result[data-tone='bad']  { background: var(--color-danger-soft);  border-color: var(--color-danger-border); }
+.result[data-tone='warn'] { background: var(--color-warning-soft); border-color: var(--color-warning-border); }
+
+.resultHead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.resultIcon { display: inline-flex; }
+.result[data-tone='ok']   .resultIcon { color: var(--color-success); }
+.result[data-tone='bad']  .resultIcon { color: var(--color-danger); }
+.result[data-tone='warn'] .resultIcon { color: var(--color-warning); }
+
+.resultTitle {
+  font-size: 12.5px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.resultMsg {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-snug);
+}
+
+.matches {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.matchChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+}
+.matchOk  { background: var(--color-success-soft); color: var(--color-success-hover); }
+.matchBad { background: var(--color-danger-soft);  color: var(--color-danger-hover); }
+
+.resultFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  gap: 8px;
+}
+.resultTs { font-size: 10.5px; color: var(--color-text-muted); }
+
+.resultRetry {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 0;
+  color: var(--color-brand);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+}
+.resultRetry:hover { color: var(--color-brand-hover); text-decoration: underline; }

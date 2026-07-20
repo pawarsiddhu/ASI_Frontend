@@ -28,10 +28,21 @@ const SEGMENT_LABEL = {
   cms: 'CMS',
   users: 'Users',
   new: 'New',
+  edit: 'Edit',
+  reports: 'Reports',
 };
 
+/**
+ * Record IDs look like `R-2026-1234` — long and not human-friendly.
+ * If we detect a raw record ID in the path, render it as a shorter chip
+ * (last segment only) rather than the ugly full string.
+ */
+const isRecordId = (seg) => /^R-\d{4}-\d{4,}$/.test(seg);
+
 function labelize(segment) {
-  return SEGMENT_LABEL[segment] || segment.replace(/-/g, ' ');
+  if (SEGMENT_LABEL[segment]) return SEGMENT_LABEL[segment];
+  if (isRecordId(segment)) return segment; // keep the record ID readable
+  return segment.replace(/-/g, ' ');
 }
 
 export default function Breadcrumbs() {

@@ -1,0 +1,62 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.mapShell {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+  background: var(--color-bg-muted);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.04));
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+/* Print-friendly: the tiles won't print cleanly, so we hide the map on print. */
+@media print {
+  .mapShell {
+    display: none;
+  }
+}
+
+.attribution {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-align: right;
+  margin: 0;
+}
+
+.attribution a {
+  color: var(--color-text-link);
+  text-decoration: none;
+}
+.attribution a:hover {
+  text-decoration: underline;
+}
+
+.missing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-muted);
+  border: 1px dashed var(--color-border-default);
+  border-radius: var(--radius-md, 6px);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+@media (max-width: 700px) {
+  .mapShell {
+    height: 260px;
+  }
+}

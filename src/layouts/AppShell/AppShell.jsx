@@ -17,8 +17,16 @@ import styles from './AppShell.module.css';
  * have to re-collapse every session.
  */
 export default function AppShell() {
-  const isMobile = useMediaQuery('(max-width: 767px)');
-  const [collapsed, setCollapsed] = useLocalStorage('asi_sidebar_collapsed', false);
+  // Drawer engages at 1023px (was 767px) so tablets and small laptops don't
+  // get the 248px sidebar wedged next to a shrinking content area.
+  const isMobile = useMediaQuery('(max-width: 1023px)');
+  // Between 1024–1279px the sidebar auto-collapses to icons-only by default;
+  // user can expand from the collapse toggle and their choice persists.
+  const isNarrowDesktop = useMediaQuery('(max-width: 1279px)');
+  const [collapsed, setCollapsed] = useLocalStorage(
+    'asi_sidebar_collapsed',
+    isNarrowDesktop
+  );
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
@@ -28,20 +36,24 @@ export default function AppShell() {
   }, [location.pathname]);
 
   return (
-    <div className={styles.shell}>
-      <Sidebar
-        collapsed={collapsed}
-        onToggleCollapsed={() => setCollapsed((c) => !c)}
-        mobileOpen={mobileOpen}
-        onCloseMobile={() => setMobileOpen(false)}
-        isMobile={isMobile}
-      />
+    <div className={styles.shell} data-print-root>
+      <div data-print-hide style={{ display: 'contents' }}>
+        <Sidebar
+          collapsed={collapsed}
+          onToggleCollapsed={() => setCollapsed((c) => !c)}
+          mobileOpen={mobileOpen}
+          onCloseMobile={() => setMobileOpen(false)}
+          isMobile={isMobile}
+        />
+      </div>
 
       <div className={styles.column}>
-        <Header
-          isMobile={isMobile}
-          onOpenMobileSidebar={() => setMobileOpen(true)}
-        />
+        <div data-print-hide style={{ display: 'contents' }}>
+          <Header
+            isMobile={isMobile}
+            onOpenMobileSidebar={() => setMobileOpen(true)}
+          />
+        </div>
         <main className={styles.main} id="main-content">
           <div className={styles.container}>
             <Outlet />
