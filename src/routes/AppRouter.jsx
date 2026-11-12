@@ -6,6 +6,7 @@ import RoleGuard from './RoleGuard';
 import RootRedirect from './RootRedirect';
 
 import AppShell from '@layouts/AppShell';
+import PublicShell from '@layouts/PublicShell';
 import Spinner from '@components/Spinner';
 import { ROLES } from '@utils/constants';
 
@@ -13,6 +14,11 @@ import { ROLES } from '@utils/constants';
 import LoginPage from '@features/auth/LoginPage';
 import UnauthorizedPage from '@features/auth/UnauthorizedPage';
 import NotFoundPage from '@features/NotFoundPage';
+
+// Public search — lazy, its own chunk
+const PublicSearchPage = lazy(() =>
+  import('@features/publicSearch/PublicSearchPage')
+);
 
 // Dashboards are lazy-loaded — each is its own bundle chunk.
 const OperatorDashboard = lazy(() =>
@@ -68,6 +74,14 @@ export default function AppRouter() {
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+        {/* Public search — no auth required, distinct shell */}
+        <Route element={<PublicShell />}>
+          <Route
+            path="/search"
+            element={<LazyBoundary><PublicSearchPage /></LazyBoundary>}
+          />
+        </Route>
 
         {/* --- Authenticated --- */}
         <Route element={<ProtectedRoute />}>

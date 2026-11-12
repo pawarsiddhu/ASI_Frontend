@@ -7,6 +7,7 @@ import {
   brandPinIcon,
   INDIA_CENTER,
   INDIA_ZOOM,
+  INDIA_BOUNDS,
   DETAIL_ZOOM,
   hasValidCoords,
 } from '@utils/leafletSetup';
@@ -26,6 +27,38 @@ function ClickHandler({ onPick, disabled }) {
       onPick(e.latlng.lat, e.latlng.lng);
     },
   });
+  return null;
+}
+
+/**
+ * FitIndiaOnMount — one-shot bounds fit for the initial pin-less view.
+ *
+ * MapContainer reads `center` and `zoom` only on the first mount, and those
+ * are set to INDIA_CENTER/INDIA_ZOOM — a coarse country-scale view. On wide
+ * viewports zoom 5 shows India plus a lot of neighbouring Asia, which reads
+ * as "global-ish". This child runs once on mount and calls fitBounds against
+ * INDIA_BOUNDS so India fills the frame regardless of widget width.
+ *
+ * `enabled` should be `false` when the form already has coordinates (edit
+ * mode, or a pin dropped before this component mounts) — we don't want to
+ * override the caller's pin-centered view.
+ *
+ * The fit is deliberately non-animated and guarded by a ref so nothing
+ * downstream can re-trigger it (e.g. React StrictMode double-invocation,
+ * or a stray re-render). Reset happens naturally via MapContainer remount
+ * when the parent bumps its `key`.
+ */
+function FitIndiaOnMount({ enabled }) {
+  const map = useMap();
+  const didFitRef = useRef(false);
+
+  useEffect(() => {
+    if (!enabled) return;
+    if (didFitRef.current) return;
+    didFitRef.current = true;
+    map.fitBounds(INDIA_BOUNDS, { padding: [8, 8], animate: false });
+  }, [enabled, map]);
+
   return null;
 }
 
@@ -73,6 +106,12 @@ function ExternalSync({ latitude, longitude, lastEmittedRef }) {
  * source (pin drop OR user typing into sibling inputs), debounced by 400ms.
  * Any in-flight request is aborted when coords change again — so a fast
  * dragger doesn't stack up requests.
+ *
+ * Initial framing:
+ *   - has pin (edit mode / navigated back with coords) → centre on the pin
+ *     at DETAIL_ZOOM
+ *   - no pin (fresh create) → mount at India centre/zoom, then fitBounds to
+ *     INDIA_BOUNDS on first paint so India fills the widget cleanly
  */
 export default function LocationMapPicker({
   latitude,
@@ -86,6 +125,17 @@ export default function LocationMapPicker({
   const hasPin = hasValidCoords(latitude, longitude);
   const lastEmittedRef = useRef(null);
   const [rerender, setRerender] = useState(0);
+
+  // Snapshot the "did the form have coords when this MapContainer mounted?"
+  // question. Recomputed on every remount (rerender bump), which is what we
+  // want — clearing the pin should refit to India.
+  const hadPinAtMountRef = useRef(hasPin);
+  useEffect(() => {
+    hadPinAtMountRef.current = hasPin;
+    // Intentionally only synced on remount — we don't want a mid-life pin
+    // drop to retroactively flip the "fit India" flag.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rerender]);
 
   // Local mirror of the last successful geocode result — used only for the
   // in-map overlay ("· District, State"). Parent owns the canonical values.
@@ -183,6 +233,8 @@ export default function LocationMapPicker({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://osm.org/copyright">OSM</a>'
           />
+          {/* Fit India tight on first paint when the form has no pin yet. */}
+          <FitIndiaOnMount enabled={!hadPinAtMountRef.current} />
           <ClickHandler onPick={emit} disabled={disabled} />
           <ExternalSync
             latitude={typeof latitude === 'number' ? latitude : parseFloat(latitude)}

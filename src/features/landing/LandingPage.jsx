@@ -65,7 +65,7 @@ const EVENTS = [
   },
 ];
 
-const SECTION_IDS = ['mission', 'registers', 'safeguard', 'archive', 'outreach'];
+const SECTION_IDS = ['mission', 'registers', 'explore', 'safeguard', 'archive', 'outreach'];
 
 /* ============================== Hooks =============================== */
 
@@ -146,6 +146,7 @@ export default function LandingPage() {
       <MissionStrip />
       <StatsBand />
       <TwoRegisters />
+      <ExploreSection />
       <Safeguard />
       <ArchiveCarousel />
       <Outreach />
@@ -295,12 +296,78 @@ function TwoRegisters() {
   );
 }
 
+/* ---------- Section 03: Explore the register ---------- */
+
+function ExploreSection() {
+  const ref = useRevealOnScroll();
+  return (
+    <section id="explore" className={styles.explore}>
+      <div className={`${styles.exploreInner} ${styles.reveal}`} ref={ref}>
+        <SectionLabel n="03" text="Explore the register" />
+        <h2 className={styles.exploreHeadline}>
+          Search the public<br />national record.
+        </h2>
+        <p className={styles.exploreLead}>
+          Both registers are open for public reference. Search verified,
+          published entries by title, reference number, or state.
+        </p>
+
+        <div className={styles.exploreTiles}>
+          <ExploreTile
+            eyebrow="Register I"
+            title="Built Heritage &amp; Sites"
+            body="Temples, forts, stepwells, civic architecture and lesser-known monuments — documented from field surveys and secondary sources."
+            cta="Explore built heritage"
+            to="/search?type=bhs"
+            photo={REGISTER_PHOTOS.bhs}
+          />
+          <ExploreTile
+            eyebrow="Register II"
+            title="Antiquities"
+            body="Sculpture, coins, seals, manuscripts, inscriptions, ritual objects and everyday artefacts held across museums and collections."
+            cta="Explore antiquities"
+            to="/search?type=antiquity"
+            photo={REGISTER_PHOTOS.antiquity}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ExploreTile({ eyebrow, title, body, cta, to, photo }) {
+  return (
+    <Link to={to} className={styles.exploreTile}>
+      <div className={styles.exploreTilePhoto}>
+        <MonumentImage
+          src={photo.src}
+          alt={photo.alt}
+          className={styles.exploreTileImg}
+        />
+        <div className={styles.exploreTileOverlay} aria-hidden="true" />
+      </div>
+      <div className={styles.exploreTileBody}>
+        <div className={styles.exploreTileEyebrow}>{eyebrow}</div>
+        <h3
+          className={styles.exploreTileTitle}
+          dangerouslySetInnerHTML={{ __html: title }}
+        />
+        <p className={styles.exploreTileText}>{body}</p>
+        <div className={styles.exploreTileCta}>
+          <span>{cta}</span>
+          <ArrowRight size={15} aria-hidden="true" />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 function Safeguard() {
   const ref = useRevealOnScroll();
   return (
     <section id="safeguard" className={styles.safeguard}>
       <div className={`${styles.safeguardInner} ${styles.reveal}`} ref={ref}>
-        <SectionLabel n="03" text="Why the register matters" />
+        <SectionLabel n="04" text="Why the register matters" />
         <figure className={styles.pullquote}>
           <div className={styles.pullquoteMark} aria-hidden="true">"</div>
           <blockquote className={styles.pullquoteText}>
@@ -369,7 +436,7 @@ function ArchiveCarousel() {
   return (
     <section id="archive" className={styles.archive}>
       <div className={`${styles.archiveInner} ${styles.reveal}`} ref={ref}>
-        <SectionLabel n="04" text="The scope of the archive" />
+        <SectionLabel n="05" text="The scope of the archive" />
         <h2 className={styles.archiveHeadline}>
           The material of a civilisation.
         </h2>
@@ -451,7 +518,7 @@ function Outreach() {
   return (
     <section id="outreach" className={styles.outreach}>
       <div className={`${styles.outreachInner} ${styles.reveal}`} ref={ref}>
-        <SectionLabel n="05" text="Outreach and capacity building" />
+        <SectionLabel n="06" text="Outreach and capacity building" />
         <h2 className={styles.outreachHeadline}>
           Training the hands that hold the register.
         </h2>
@@ -568,6 +635,7 @@ function SiteHeader({ scrolled, active, onNavClick }) {
   const items = [
     { id: 'mission', label: 'Mission' },
     { id: 'registers', label: 'Registers' },
+    { id: 'explore', label: 'Explore' },
     { id: 'safeguard', label: 'Safeguard' },
     { id: 'archive', label: 'Archive' },
     { id: 'outreach', label: 'Outreach' },
