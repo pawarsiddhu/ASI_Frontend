@@ -32,11 +32,35 @@ export const brandPinIcon = L.divIcon({
   popupAnchor: [0, -36],
 });
 
-/** Default map view — India as a whole, wide zoom so the user picks a region. */
+/**
+ * Default map view — India as a whole.
+ *
+ * INDIA_CENTER + INDIA_ZOOM are the coarse fallback (roughly the geographic
+ * centre near Nagpur at country-scale zoom). The picker uses these as the
+ * MapContainer's initial props, then a fitBounds pass with INDIA_BOUNDS
+ * tightens the frame so India fills the widget regardless of viewport
+ * width. Without the fitBounds step, wide desktop widgets at zoom 5 show
+ * a lot of surrounding Asia — which reads as "global-ish" rather than
+ * "here's India".
+ */
 export const INDIA_CENTER = [22.5937, 78.9629];
 export const INDIA_ZOOM = 5;
 
-/** Focused view for detail-page reads. */
+/**
+ * Bounding box for the Republic of India — [[south, west], [north, east]].
+ * Tuned tight to India's mainland extent (Kanyakumari's tip to Ladakh, Gujarat
+ * coast to Arunachal). Chosen small enough that fitBounds produces a zoomed-in
+ * frame where India dominates the widget, but large enough to include the
+ * Kashmir + Northeast extremes so no record's home region is off-screen at
+ * the default view. NOT enforced as maxBounds — operators can still pan to
+ * remote sites like Lakshadweep or the Andamans if ever needed.
+ */
+export const INDIA_BOUNDS = [
+  [8.0, 68.5],   // south-west corner (just north of Kanyakumari / Gujarat coast)
+  [36.0, 96.5],  // north-east corner (Ladakh / Arunachal)
+];
+
+/** Focused view for detail-page reads and after a pin is dropped. */
 export const DETAIL_ZOOM = 14;
 
 /**

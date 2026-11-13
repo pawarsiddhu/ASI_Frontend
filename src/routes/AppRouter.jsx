@@ -6,6 +6,7 @@ import RoleGuard from './RoleGuard';
 import RootRedirect from './RootRedirect';
 
 import AppShell from '@layouts/AppShell';
+import PublicShell from '@layouts/PublicShell';
 import Spinner from '@components/Spinner';
 import { ROLES } from '@utils/constants';
 
@@ -13,6 +14,11 @@ import { ROLES } from '@utils/constants';
 import LoginPage from '@features/auth/LoginPage';
 import UnauthorizedPage from '@features/auth/UnauthorizedPage';
 import NotFoundPage from '@features/NotFoundPage';
+
+// Public search — lazy, its own chunk
+const PublicSearchPage = lazy(() =>
+  import('@features/publicSearch/PublicSearchPage')
+);
 
 // Dashboards are lazy-loaded — each is its own bundle chunk.
 const OperatorDashboard = lazy(() =>
@@ -54,6 +60,9 @@ const BHSDetailPage = lazy(() => import('@features/bhs/BHSDetailPage'));
 // Reports feature
 const ReportsPage = lazy(() => import('@features/reports/ReportsPage'));
 
+// Map Explorer — lazy so MapLibre (~800 KB) only loads on this route
+const MapExplorerPage = lazy(() => import('@features/map/MapExplorerPage'));
+
 const LazyBoundary = ({ children }) => (
   <Suspense fallback={<Spinner centered label="Loading page" />}>
     {children}
@@ -68,6 +77,18 @@ export default function AppRouter() {
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+        {/* Public search — no auth required, distinct shell */}
+        <Route element={<PublicShell />}>
+          <Route
+            path="/search"
+            element={<LazyBoundary><PublicSearchPage /></LazyBoundary>}
+          />
+          <Route
+            path="/explore"
+            element={<LazyBoundary><MapExplorerPage mode="public" /></LazyBoundary>}
+          />
+        </Route>
 
         {/* --- Authenticated --- */}
         <Route element={<ProtectedRoute />}>
@@ -143,6 +164,12 @@ export default function AppRouter() {
             <Route
               path="/records/bhs/:id/edit"
               element={<LazyBoundary><BHSEditPage /></LazyBoundary>}
+            />
+
+            {/* Map Explorer — all internal roles, read-only */}
+            <Route
+              path="/map"
+              element={<LazyBoundary><MapExplorerPage /></LazyBoundary>}
             />
 
             {/* Reports — Chunk A: Admin + Super Admin only */}

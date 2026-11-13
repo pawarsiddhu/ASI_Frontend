@@ -25,6 +25,7 @@ dist-ssr
 
 # Environment files
 .env
+.env.development
 .env.local
 .env.development.local
 .env.test.local
@@ -34,3 +35,6 @@ dist-ssr
 .eslintcache
 .cache
 .parcel-cache
+
+# Archives
+*.zip

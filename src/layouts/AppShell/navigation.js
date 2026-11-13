@@ -1,4 +1,4 @@
-import { LayoutDashboard, FileText, Landmark } from 'lucide-react';
+import { LayoutDashboard, FileText, Landmark, Map } from 'lucide-react';
 import { ROLES } from '@utils/constants';
 
 /**
@@ -20,30 +20,35 @@ const NAV = {
     { label: 'Dashboard', to: '/operator', icon: LayoutDashboard },
     { label: 'My Antiquities', to: '/records/antiquities', icon: FileText },
     { label: 'My Built Heritage', to: '/records/bhs', icon: Landmark },
+    { label: 'Map Explorer', to: '/map', icon: Map },
   ],
 
   [ROLES.SUPERVISOR]: [
     { label: 'Dashboard', to: '/supervisor', icon: LayoutDashboard },
     { label: 'All Antiquities', to: '/records/antiquities', icon: FileText },
     { label: 'All Built Heritage', to: '/records/bhs', icon: Landmark },
+    { label: 'Map Explorer', to: '/map', icon: Map },
   ],
 
   [ROLES.ADMIN]: [
     { label: 'Dashboard', to: '/admin', icon: LayoutDashboard },
     { label: 'All Antiquities', to: '/records/antiquities', icon: FileText },
     { label: 'All Built Heritage', to: '/records/bhs', icon: Landmark },
+    { label: 'Map Explorer', to: '/map', icon: Map },
   ],
 
   [ROLES.SUPERADMIN]: [
     { label: 'Dashboard', to: '/superadmin', icon: LayoutDashboard },
     { label: 'All Antiquities', to: '/records/antiquities', icon: FileText },
     { label: 'All Built Heritage', to: '/records/bhs', icon: Landmark },
+    { label: 'Map Explorer', to: '/map', icon: Map },
   ],
 
   [ROLES.RD]: [
     { label: 'Dashboard', to: '/rd', icon: LayoutDashboard },
     { label: 'All Antiquities', to: '/records/antiquities', icon: FileText },
     { label: 'All Built Heritage', to: '/records/bhs', icon: Landmark },
+    { label: 'Map Explorer', to: '/map', icon: Map },
   ],
 };
 
