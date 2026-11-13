@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Landmark, FileText, ShieldCheck, ClipboardCheck,
@@ -309,7 +309,8 @@ function ExploreSection() {
         </h2>
         <p className={styles.exploreLead}>
           Both registers are open for public reference. Search verified,
-          published entries by title, reference number, or state.
+          published entries by title, reference number, or state — or see
+          them on the map, in place and in time.
         </p>
 
         <div className={styles.exploreTiles}>
@@ -330,8 +331,56 @@ function ExploreSection() {
             photo={REGISTER_PHOTOS.antiquity}
           />
         </div>
+
+        <MapBanner />
       </div>
     </section>
+  );
+}
+
+/**
+ * MapBanner — entry to the public Heritage Map (/explore).
+ * The dot field is decorative and deliberately abstract: no country outline,
+ * so nothing here can be read as an official boundary.
+ */
+const MAP_DOT_COLORS = ['#D9B44A', '#D48A2E', '#C2611F', '#A63D1F', '#8B1A1A', '#6E1F45', '#4C2A5E'];
+
+function MapBanner() {
+  const dots = useMemo(() => {
+    // Deterministic pseudo-random scatter
+    let seed = 7;
+    const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+    return Array.from({ length: 70 }, (_, i) => ({
+      x: 6 + rnd() * 88,
+      y: 8 + rnd() * 84,
+      r: 2.2 + rnd() * 3.2,
+      c: MAP_DOT_COLORS[i % MAP_DOT_COLORS.length],
+    }));
+  }, []);
+
+  return (
+    <Link to="/explore" className={styles.mapBanner}>
+      <div className={styles.mapBannerBody}>
+        <div className={styles.exploreTileEyebrow}>New · Heritage Map</div>
+        <h3 className={styles.mapBannerTitle}>See the register on the map.</h3>
+        <p className={styles.mapBannerText}>
+          Find any monument or antiquity, slide through two thousand years of history,
+          see where objects were found and where they are kept today — and download
+          what you find.
+        </p>
+        <div className={styles.mapBannerCta}>
+          <span>Open the map</span>
+          <ArrowRight size={15} aria-hidden="true" />
+        </div>
+      </div>
+      <div className={styles.mapBannerArt} aria-hidden="true">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+          {dots.map((d, i) => (
+            <circle key={i} cx={d.x} cy={d.y} r={d.r / 3} fill={d.c} opacity="0.85" />
+          ))}
+        </svg>
+      </div>
+    </Link>
   );
 }
 

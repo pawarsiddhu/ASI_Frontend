@@ -12,6 +12,12 @@ import {
   CIRCLE_TO_STATE,
 } from '@features/antiquities/schema';
 import { CIRCLE_METADATA } from '@features/circles/circleMetadata';
+import {
+  MASTERS as MAP_MASTERS,
+  bhsFeatureCollection,
+  antiquityFeatureCollection,
+  publicFeatureCollection,
+} from './data/mapSeed';
 import { ROLES } from '@utils/constants';
 
 // ============================================================================
@@ -666,6 +672,50 @@ export const handlers = [
       totals,
       rows,
     });
+  }),
+
+  // ---------- Map Explorer (DUMMY research dataset) ----------
+  // Proposed contract for the real backend — see src/mocks/data/mapSeed.js.
+  // GET /map/masters          → controlled vocabularies (periods with years, etc.)
+  // GET /map/features?layer=  → GeoJSON FeatureCollection for bhs | antiquities
+  // Operators only get their own records on /records; the map follows the
+  // same rule in production. The demo dataset has no owners, so everyone
+  // sees everything here.
+  // Public (no login) variants. MUST stay above the staff handlers:
+  // '*/map/...' would otherwise also match '/public/map/...' and demand auth.
+  // — server-side safety rules applied in
+  // publicFeatureCollection(). Masters carry nothing sensitive.
+  http.get('*/public/map/masters', async () => {
+    await delay(200);
+    return HttpResponse.json({ success: true, message: 'Masters fetched', data: MAP_MASTERS });
+  }),
+
+  http.get('*/public/map/features', async ({ request }) => {
+    await delay(350);
+    const layer = new URL(request.url).searchParams.get('layer');
+    if (layer !== 'bhs' && layer !== 'antiquities') return badRequest('layer must be "bhs" or "antiquities".');
+    return HttpResponse.json({ success: true, message: 'Features fetched', data: publicFeatureCollection(layer) });
+  }),
+
+  http.get('*/map/masters', async ({ request }) => {
+    await delay(200);
+    const { error } = requireAuth(request);
+    if (error) return error;
+    return HttpResponse.json({ success: true, message: 'Masters fetched', data: MAP_MASTERS });
+  }),
+
+  http.get('*/map/features', async ({ request }) => {
+    await delay(350);
+    const { error } = requireAuth(request);
+    if (error) return error;
+    const layer = new URL(request.url).searchParams.get('layer');
+    if (layer === 'bhs') {
+      return HttpResponse.json({ success: true, message: 'Features fetched', data: bhsFeatureCollection() });
+    }
+    if (layer === 'antiquities') {
+      return HttpResponse.json({ success: true, message: 'Features fetched', data: antiquityFeatureCollection() });
+    }
+    return badRequest('layer must be "bhs" or "antiquities".');
   }),
 ];
 

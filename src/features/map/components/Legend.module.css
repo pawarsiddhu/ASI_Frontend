@@ -1,0 +1,131 @@
+.legend {
+  position: absolute;
+  left: var(--space-3);
+  bottom: var(--space-3);
+  z-index: 2;
+  width: 230px;
+  max-height: calc(100% - 2 * var(--space-3));
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  font-size: var(--font-size-xs);
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  background: none;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--space-3) var(--space-2);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.name em {
+  color: var(--color-text-muted);
+  font-style: normal;
+}
+
+.count {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.empty {
+  color: var(--color-text-muted);
+}
+
+.symbols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
+}
+
+.symbols span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.symSite,
+.symObj,
+.symMuseum {
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.symSite {
+  width: 11px;
+  height: 11px;
+  background: var(--color-gray-500);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--color-gray-300);
+}
+
+.symObj {
+  width: 8px;
+  height: 8px;
+  background: var(--color-gray-500);
+  border: 1px solid #1A1815;
+}
+
+.symMuseum {
+  width: 12px;
+  height: 12px;
+}
+
+.symLine {
+  display: inline-block;
+  width: 16px;
+  border-top: 2px dashed;
+}
+
+@media (max-width: 767px) {
+  .legend {
+    width: 180px;
+  }
+}

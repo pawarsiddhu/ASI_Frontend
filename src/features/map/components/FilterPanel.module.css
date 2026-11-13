@@ -1,0 +1,239 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-surface);
+  border-right: 1px solid var(--color-border-subtle);
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.searchRow {
+  position: relative;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.searchIcon {
+  position: absolute;
+  left: calc(var(--space-3) + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+}
+
+.search {
+  width: 100%;
+  height: 34px;
+  padding: 0 var(--space-3) 0 32px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+}
+
+.search:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.headingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.heading {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+}
+
+.resetBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: none;
+  color: var(--color-brand);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.sub {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-left: var(--space-5);
+  margin-bottom: var(--space-1);
+}
+
+.toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.toggle input {
+  margin-top: 2px;
+  accent-color: var(--color-brand);
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.toggleText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.toggleText small {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-snug);
+}
+
+.segment {
+  display: inline-flex;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  align-self: flex-start;
+}
+
+.seg,
+.segOn {
+  border: 0;
+  padding: 4px 10px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.seg {
+  background: var(--color-bg-surface);
+  color: var(--color-text-secondary);
+}
+
+.seg + .seg,
+.segOn + .seg,
+.seg + .segOn {
+  border-left: 1px solid var(--color-border-default);
+}
+
+.segOn {
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
+}
+
+.group {
+  border: 0;
+  padding: 0;
+  margin: 0 0 var(--space-2);
+  min-width: 0;
+}
+
+.groupLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.clearLink {
+  border: 0;
+  background: none;
+  color: var(--color-brand);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  padding: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip,
+.chipOn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  border: 1px solid var(--color-border-default);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.chip {
+  background: var(--color-bg-surface);
+  color: var(--color-text-secondary);
+}
+
+.chip:hover {
+  border-color: var(--color-brand-border);
+  background: var(--color-brand-soft);
+}
+
+.chipOn {
+  background: var(--color-brand-soft);
+  border-color: var(--color-brand);
+  color: var(--color-brand-active);
+  font-weight: var(--font-weight-medium);
+}
+
+.swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.selects {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.pubLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: var(--font-weight-medium);
+}
+
+.pubOn {
+  background: var(--color-accent-soft);
+}
+
+.note {
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-base);
+  color: var(--color-text-muted);
+}

@@ -22,6 +22,7 @@ const SEGMENT_LABEL = {
   antiquities: 'Antiquities',
   bhs: 'Built Heritage',
   sites: 'Sites',
+  map: 'Map Explorer',
   records: 'Records',
   reports: 'Reports',
   cpanel: 'C-Panel',

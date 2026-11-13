@@ -60,6 +60,9 @@ const BHSDetailPage = lazy(() => import('@features/bhs/BHSDetailPage'));
 // Reports feature
 const ReportsPage = lazy(() => import('@features/reports/ReportsPage'));
 
+// Map Explorer — lazy so MapLibre (~800 KB) only loads on this route
+const MapExplorerPage = lazy(() => import('@features/map/MapExplorerPage'));
+
 const LazyBoundary = ({ children }) => (
   <Suspense fallback={<Spinner centered label="Loading page" />}>
     {children}
@@ -80,6 +83,10 @@ export default function AppRouter() {
           <Route
             path="/search"
             element={<LazyBoundary><PublicSearchPage /></LazyBoundary>}
+          />
+          <Route
+            path="/explore"
+            element={<LazyBoundary><MapExplorerPage mode="public" /></LazyBoundary>}
           />
         </Route>
 
@@ -157,6 +164,12 @@ export default function AppRouter() {
             <Route
               path="/records/bhs/:id/edit"
               element={<LazyBoundary><BHSEditPage /></LazyBoundary>}
+            />
+
+            {/* Map Explorer — all internal roles, read-only */}
+            <Route
+              path="/map"
+              element={<LazyBoundary><MapExplorerPage /></LazyBoundary>}
             />
 
             {/* Reports — Chunk A: Admin + Super Admin only */}

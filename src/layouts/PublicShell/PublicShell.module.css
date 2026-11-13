@@ -68,6 +68,42 @@
   text-overflow: ellipsis;
 }
 
+/* --- Section nav --- */
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.navLink,
+.navOn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.navLink {
+  color: var(--color-text-secondary);
+}
+
+.navLink:hover {
+  color: var(--color-text-primary);
+  background: var(--color-bg-surface-alt, rgba(0, 0, 0, 0.03));
+}
+
+.navOn {
+  color: var(--color-brand);
+  background: var(--color-brand-soft);
+}
+
 /* --- Actions --- */
 
 .actions {
@@ -134,5 +170,13 @@
   }
   .brandLine2 {
     display: none;
+  }
+  .navLink span,
+  .navOn span {
+    display: none;
+  }
+  .navLink,
+  .navOn {
+    padding: 8px;
   }
 }

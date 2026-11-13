@@ -1,0 +1,250 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-16) 0;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-5);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: calc(-1 * var(--space-2));
+}
+
+.stats strong {
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.statNote {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.pubTag {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: #8A7530;
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-accent-border);
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* Filters | map column. Height tracks the viewport so the map stays
+   usable on laptops without the page becoming a scroll trap. */
+.explorer {
+  display: grid;
+  grid-template-columns: 272px minmax(0, 1fr);
+  height: clamp(560px, calc(100vh - 230px), 860px);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.mapColumn {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+  min-height: 46px;
+  flex-wrap: wrap;
+}
+
+.tools {
+  display: inline-flex;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.tool,
+.toolOn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.tool + .tool,
+.tool + .toolOn,
+.toolOn + .tool {
+  border-left: 1px solid var(--color-border-default);
+}
+
+.tool {
+  background: var(--color-bg-surface);
+  color: var(--color-text-secondary);
+}
+
+.tool:hover {
+  background: var(--color-bg-muted);
+}
+
+.toolOn {
+  background: var(--color-sidebar-bg);
+  color: var(--color-sidebar-text-strong);
+}
+
+.toolStatus {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-brand-soft);
+  border: 1px solid var(--color-brand-border);
+  color: var(--color-brand-active);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+.chip button {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.chip button:hover {
+  background: var(--color-brand-border);
+}
+
+.mapArea {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.footnote {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-base);
+  max-width: 900px;
+}
+
+@media (max-width: 1023px) {
+  .tool span {
+    display: none;
+  }
+}
+
+/* Stack on tablets/phones: filters above the map */
+@media (max-width: 899px) {
+  .explorer {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .mapColumn {
+    height: 78vh;
+    min-height: 500px;
+  }
+
+  .explorer > aside {
+    display: none;
+    max-height: 360px;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .explorerFiltersOpen > aside {
+    display: flex;
+  }
+
+  .filtersToggle {
+    display: inline-flex;
+  }
+}
+
+/* Public /explore — PublicShell's main is full-bleed, so we add the gutter. */
+.pagePublic {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-6) var(--space-10);
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .pagePublic {
+    padding: var(--space-4) var(--space-4) var(--space-8);
+  }
+}
+
+/* Phones only: filters collapse behind this button */
+.filtersToggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+@media (max-width: 899px) {
+  .filtersToggle {
+    display: inline-flex;
+  }
+}
